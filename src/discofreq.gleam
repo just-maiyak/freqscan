@@ -2,7 +2,7 @@
 
 import gleam/int
 import gleam/list
-import gleam/option.{type Option, None}
+import gleam/option.{type Option, Some}
 import lustre
 import lustre/attribute
 import lustre/effect.{type Effect}
@@ -24,17 +24,19 @@ pub fn main() {
 type Model {
   Model(
     answers: Answers,
-    user_path: List(Question),
+    next_questions: List(Question),
+    previous_questions: List(Question),
     current_page: Page,
-    result: Option(Result),
+    result: Option(Frequency),
   )
 }
 
 type Answers =
   List(Choice)
 
-type Result =
-  #(Station, String)
+type Frequency {
+  Frequency(freq: Station, name: String, adjectives: List(String), tags: List(String), playlist: String)
+}
 
 type Question {
   Question(question: String, choices: List(Choice))
@@ -61,10 +63,25 @@ type Page {
 fn init(_) -> #(Model, Effect(Msg)) {
   let model: Model =
     Model(
-      answers: [],
-      user_path: list.shuffle(questions),
+      // answers: [],
+      answers: [
+        Choice(
+          answer: "Une joie simple, ancrée, je danse comme je respire",
+          station: Slower,
+        ),
+        Choice(
+          answer: "Une joie simple, ancrée, je danse comme je respire",
+          station: Slower,
+        ),
+        Choice(
+          answer: "Une joie simple, ancrée, je danse comme je respire",
+          station: Slower,
+        ),
+      ],
+      next_questions: list.shuffle(questions),
+      previous_questions: [],
       current_page: Home,
-      result: None,
+      result: Some(Frequency(freq: Faster, name: "Hard Speed Radio", adjectives: ["électrisante", "haletante"], tags: ["kick sec", "grosse tabasse"], playlist: "https://link.deezer.com/s/30iKS8WFIDokwCdWfihFA")),
     )
 
   #(model, effect.none())
@@ -75,6 +92,8 @@ fn init(_) -> #(Model, Effect(Msg)) {
 type Msg {
   StartQuizz
   NextQuestion(choice: Choice)
+  PreviousQuestion
+  FetchResults(answers: Answers)
   StartOver
 }
 
@@ -82,38 +101,58 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
   case msg {
     StartOver -> init(Nil)
     StartQuizz -> {
-      let assert [next_question, ..rest] = model.user_path
+      let assert [next_question, ..rest] = model.next_questions
       #(
-        Model(..model, current_page: Prompt(next_question), user_path: rest),
+        Model(
+          ..model,
+          current_page: Prompt(next_question),
+          next_questions: rest,
+          previous_questions: [],
+        ),
         effect.none(),
       )
     }
-    NextQuestion(choice) ->
-      case model {
-        Model(current_page: Home, ..) | Model(current_page: Result, ..) ->
-          panic as "Something went very wrong"
-        Model(current_page: Prompt(_), user_path: [next, ..rest], ..) -> {
-          #(
-            Model(
-              ..model,
-              answers: [choice, ..model.answers],
-              user_path: rest,
-              current_page: Prompt(next),
-            ),
-            effect.none(),
-          )
-        }
-        Model(answers: _, user_path: [], ..) -> #(
-          Model(..model, current_page: LoadingResult),
+    NextQuestion(previous_choice) ->
+      case model.current_page, model.next_questions {
+        Prompt(current_quesetion), [next_question, ..rest] -> #(
+          Model(
+            ..model,
+            answers: [previous_choice, ..model.answers],
+            next_questions: rest,
+            previous_questions: [current_quesetion, ..model.previous_questions],
+            current_page: Prompt(next_question),
+          ),
+          effect.none(),
+        )
+        _, [] -> #(
+          Model(
+            ..model,
+            answers: [previous_choice, ..model.answers],
+            current_page: LoadingResult,
+          ),
           effect.none(),
           // Here we'll call the API to fetch the results
         )
-        Model(current_page: LoadingResult, ..) -> #(
-          // Once the results are in, we display them to the user
-          Model(..model, current_page: Result),
+        Home, _ | LoadingResult, _ | Result, _ -> #(model, effect.none())
+      }
+    PreviousQuestion -> {
+      let assert Prompt(current_question) = model.current_page
+      case model.previous_questions, model.answers {
+        [previous_question, ..rest], [_, ..answers] -> #(
+          Model(
+            ..model,
+            current_page: Prompt(previous_question),
+            previous_questions: rest,
+            next_questions: [current_question, ..model.next_questions],
+            answers: answers,
+          ),
           effect.none(),
         )
+        _, _ -> #(model, effect.none())
+        // Either 1st question or out of bounds
       }
+    }
+    FetchResults(answers) -> todo
   }
 }
 
@@ -125,83 +164,181 @@ fn view(model: Model) -> Element(Msg) {
     Model(current_page: Prompt(question), ..) ->
       view_question(
         question,
-        list.length(questions) - list.length(model.user_path),
+        list.length(questions) - list.length(model.next_questions),
       )
     Model(current_page: LoadingResult, ..) -> view_loading()
-    Model(current_page: Result, ..) -> view_result()
+    Model(current_page: Result, ..) -> view_result(model.result)
   }
 }
 
-fn view_home() -> Element(Msg) {
+fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
   html.div(
     [
-      attribute.class("hero min-h-screen"),
-      attribute.style(
-        "background",
-        "linear-gradient(179.99deg, #C0B2B2 3.8%, #FF8635 26.35%, #C0B2B2 56.23%, #B991FE 104.99%)",
+      attribute.class(
+        "@container hero size-full min-h-screen min-w-screen bg-(image:--duotone-gradient)",
       ),
     ],
     [
-      html.div([attribute.class("hero-overlay")], []),
+      view_header(),
       html.div(
-        [attribute.class("hero-content text-neutral-content text-center")],
         [
-          html.div([attribute.class("max-w-2xl")], [
-            html.h1(
-              [
-                attribute.class("mb-5 p-5 pb-7 text-7xl text-neutral font-bold"),
-                attribute.style("background", "white"),
-              ],
-              [html.text("Scan ta frequence")],
-            ),
-            html.p([attribute.class("mb-5 text-lg")], [
-              html.text(
-                "Réponds au test pour savoir quelle onde vibre en toi. À la fin, on t'attribue une station ...et la vibe qui va avec.",
-              ),
-            ]),
-            html.button(
-              [attribute.class("btn rounded-none btn-lg btn-primary m-4 px-12"), event.on_click(StartQuizz)],
-              [html.text("C'est parti !")],
-            ),
-          ]),
+          attribute.class(
+            "size-full bg-[url(/src/assets/noise.svg)] mix-blend-soft-light opacity-50 contrast-150",
+          ),
         ],
+        [],
       ),
+      html.div(
+        [
+          attribute.class(
+            "hero-content size-fit flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
+          ),
+        ],
+        content,
+      ),
+      view_footer(),
     ],
   )
 }
 
-fn view_question(question: Question, question_number: Int) -> Element(Msg) {
-  html.div(
+fn view_home() -> Element(Msg) {
+  view_hero([
+    html.h1(
+      [
+        attribute.class(
+          "mb-2 p-4 pt-1 text-3xl "
+          <> "@lg:mb-4 @lg:p-8 @lg:pt-3 @lg:text-5xl "
+          <> "@4xl:mb-5 @4xl:p-12 @4xl:pt-5 @4xl:text-7xl "
+          <> "size-fit text-neutral font-normal italic font-obviously tracking-[-.12em]",
+        ),
+        attribute.style("background", "white"),
+      ],
+      [html.text("scanne ta fréquence")],
+    ),
+    html.p(
+      [
+        attribute.class(
+          "w-2xs px-3 text-sm "
+          <> "@lg:w-md @lg:px-5 @lg:text-lg "
+          <> "@4xl:w-xl @lg:px-6 @4xl:text-xl "
+          <> "font-normal text-base-content font-helvetica-neue",
+        ),
+      ],
+      [
+        html.strong([], [
+          html.text("Réponds au test pour savoir quelle onde vibre en toi. "),
+        ]),
+        html.text(
+          "À la fin, on t'attribue une station ...et la vibe qui va avec.",
+        ),
+      ],
+    ),
+    html.button(
+      [
+        attribute.class(
+          "btn btn-sm "
+          <> "@lg:btn-md "
+          <> "@4xl:btn-xl "
+          <> "btn-primary w-fit m-4 font-helvetica-neue",
+        ),
+        event.on_click(StartQuizz),
+      ],
+      [html.text("Démarrer le test")],
+    ),
+  ])
+}
+
+fn view_header() -> Element(Msg) {
+  html.header(
     [
-      attribute.class("hero min-h-screen"),
-      attribute.style(
-        "background",
-        "linear-gradient(179.99deg, #C0B2B2 3.8%, #FF8635 26.35%, #C0B2B2 56.23%, #B991FE 104.99%)",
+      attribute.class(
+        "flex flex-row w-full bg-repeat-x place-self-start bg-[url(/src/assets/dashed-line-top.svg)]",
       ),
     ],
     [
-      html.div([attribute.class("hero-content text-neutral text-center")], [
-        html.div([attribute.class("max-w-4xl")], [
-          html.p([attribute.class("mb-3 font-bold")], [
-            html.text("Question " <> int.to_string(question_number)),
-          ]),
-          html.h1([attribute.class("mb-5 p-2 text-3xl font-bold")], [
-            html.text(question.question),
-          ]),
-          html.div(
-            [attribute.class("grid grid-cols-2 gap-2")],
-            list.map(question.choices, view_choice_button),
-          ),
+      html.label([attribute.class(" p-8 swap swap-rotate z-20 ")], [
+        html.input([
+          attribute.type_("checkbox"),
+          attribute.class("theme-controller"),
+          attribute.value("station-r-light"),
+        ]),
+        html.img([
+          attribute.class("swap-on h-10 w-10 fill-current"),
+          attribute.src("./src/assets/sun.svg"),
+        ]),
+        html.img([
+          attribute.class("swap-off h-10 w-10 fill-current"),
+          attribute.src("./src/assets/moon.svg"),
         ]),
       ]),
     ],
   )
 }
 
+fn view_footer() -> Element(Msg) {
+  html.footer([attribute.class("footer place-self-end place-items-end gap-0")], [
+    view_logos(),
+    html.img([
+      attribute.class("w-full h-4 @4xl:h-fit object-cover"),
+      attribute.src("/src/assets/dashed-line-bottom.svg"),
+    ]),
+  ])
+}
+
+fn view_logos() -> Element(Msg) {
+  html.img([
+    attribute.class("h-1/2 @lg:portrait:h-3/4 @4xl:h-auto"),
+    attribute.src("./src/assets/logos.svg"),
+  ])
+}
+
+fn view_question(question: Question, question_number: Int) -> Element(Msg) {
+  view_hero([
+    html.p(
+      [
+        attribute.class(
+          "w-fit px-4 pb-1 text-md "
+          <> "@lg:text-lg "
+          <> "@4xl:text-2xl "
+          <> "justify-self-center text-neutral font-semibold font-darker rounded-4xl bg-primary",
+        ),
+      ],
+      [html.text("Question " <> int.to_string(question_number))],
+    ),
+    html.h1(
+      [
+        attribute.class(
+          "mb-4 p-2 text-2xl "
+          <> "@lg:text-3xl "
+          <> "@4xl:text-5xl "
+          <> "text-neutral font-normal italic font-obviously tracking-[-.08em]",
+        ),
+      ],
+      [html.text(question.question)],
+    ),
+    html.div(
+      [
+        attribute.class(
+          "max-w-2xs "
+          <> "portrait:flex portrait:flex-col "
+          <> "landscape:grid landscape:grid-cols-2 landscape:content-center "
+          <> "@lg:max-w-none h-max place-items-center gap-2",
+        ),
+      ],
+      list.map(list.shuffle(question.choices), view_choice_button),
+    ),
+    html.button([attribute.class("btn"), event.on_click(PreviousQuestion)], [
+      html.text("Précédent"),
+    ]),
+  ])
+}
+
 fn view_choice_button(choice: Choice) -> Element(Msg) {
   html.button(
     [
-      attribute.class("btn rounded-none btn-primary-content"),
+      attribute.class(
+        "btn btn-sm @lg:portrait:btn-md @4xl:btn-lg rounded-3xl h-lg px-5",
+      ),
       event.on_click(NextQuestion(choice)),
     ],
     [html.text(choice.answer)],
@@ -209,35 +346,59 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
 }
 
 fn view_loading() -> Element(Msg) {
-  html.div(
-    [
-      attribute.class("hero min-h-screen"),
-      attribute.style(
-        "background",
-        "linear-gradient(179.99deg, #C6B7B8 2.9%, #FE9722 4.54%, #C6B7B8 12.25%, #000000 18.83%, #B68CFE 22.65%, #000000 54.66%, #C6B7B8 71.96%, #C6B7B8 77.73%, #FE9722 80.35%, #C6B7B8 89.81%, #FE9722 104.99%, #C6B7B8 2.9%, #FE9722 9.04%, #C6B7B8 24.25%, #000000 36.83%, #B68CFE 43.65%, #000000 54.66%, #C6B7B8 71.96%, #C6B7B8 77.73%, #FE9722 80.35%, #C6B7B8 89.81%, #FE9722 104.99%)"
-      ),
-    ],
-    [
-      html.div([attribute.class("hero-overlay")], []),
-      html.div(
-        [attribute.class("hero-content text-center")],
+  html.div([attribute.class("hero min-h-screen")], [
+    html.div(
+      [
+        attribute.class(
+          "size-full animate-scroll-down bg-(image:--loading-gradient)",
+        ),
+        attribute.style(
+          "animation-delay",
+          "-" <> int.random(60) |> int.to_string <> "s",
+        ),
+        attribute.style("background-size", "100% 200%"),
+      ],
+      [
+        html.div(
+          [
+            attribute.class("size-full"),
+            attribute.style("background", "url(./src/assets/noise.svg)"),
+            attribute.style("mix-blend-mode", "screen"),
+            attribute.style("opacity", ".2"),
+            attribute.style("filter", "contrast(1.5)"),
+          ],
+          [],
+        ),
+      ],
+    ),
+    html.div([attribute.class("hero-overlay animate-pulse-darken")], []),
+    html.div([attribute.class("hero-content text-center")], [
+      html.h1(
         [
-          html.div([attribute.class("max-w-5xl")], [
-            html.h1(
-              [
-                attribute.class("text-3xl text-neutral-content"),
-              ],
-              [html.text("calcul de ta fréquence ...")],
-            ),
-          ]),
+          attribute.class(
+            "text-5xl text-neutral-content font-light italic font-obviously tracking-[-.08em] animate-pulse",
+          ),
         ],
+        [html.text("calcul de ta fréquence ...")],
       ),
-    ],
-  )
+    ]),
+  ])
 }
 
-fn view_result() -> Element(Msg) {
+fn view_result(result: Option(Frequency)) -> Element(Msg) {
     todo
+}
+
+fn view_answers(answers: Answers) -> Element(Msg) {
+  html.div(
+    [],
+    list.map(answers, fn(choice) {
+      html.section([attribute.class("text-neutral-content")], [
+        html.p([], [html.text(choice.answer)]),
+        html.p([], [choice.station |> station_to_string |> html.text]),
+      ])
+    }),
+  )
 }
 
 // DATA    ------------------------------------------------
@@ -247,10 +408,7 @@ const questions: List(Question) = [
     question: "Un lieu idéal pour écouter de la musique ?",
     choices: [
       Choice(answer: "En open-air au coucher du soleil 🌞", station: Slower),
-      Choice(
-        answer: "Dans un club cosy avec lumières chaudes 🧡",
-        station: Slow,
-      ),
+      Choice(answer: "Dans un club cosy avec lumières chaudes 🧡", station: Slow),
       Choice(
         answer: "Un club sombre avec strobos et système son massif 🏭",
         station: Fast,
@@ -325,3 +483,12 @@ const questions: List(Question) = [
     ],
   ),
 ]
+
+fn station_to_string(station: Station) -> String {
+  case station {
+    Faster -> "108.9 FM"
+    Fast -> "105.6 FM"
+    Slow -> "101.1 FM"
+    Slower -> "97.3 FM"
+  }
+}
