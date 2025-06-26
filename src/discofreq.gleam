@@ -35,7 +35,13 @@ type Answers =
   List(Choice)
 
 type Frequency {
-  Frequency(freq: Station, name: String, adjectives: List(String), tags: List(String), playlist: String)
+  Frequency(
+    freq: Station,
+    name: String,
+    adjectives: List(String),
+    tags: List(String),
+    playlist: String,
+  )
 }
 
 type Question {
@@ -81,7 +87,13 @@ fn init(_) -> #(Model, Effect(Msg)) {
       next_questions: list.shuffle(questions),
       previous_questions: [],
       current_page: Home,
-      result: Some(Frequency(freq: Faster, name: "Hard Speed Radio", adjectives: ["électrisante", "haletante"], tags: ["kick sec", "grosse tabasse"], playlist: "https://link.deezer.com/s/30iKS8WFIDokwCdWfihFA")),
+      result: Some(Frequency(
+        freq: Faster,
+        name: "Hard Speed Radio",
+        adjectives: ["électrisante", "haletante"],
+        tags: ["kick sec", "grosse tabasse"],
+        playlist: "https://link.deezer.com/s/30iKS8WFIDokwCdWfihFA",
+      )),
     )
 
   #(model, effect.none())
@@ -386,7 +398,7 @@ fn view_loading() -> Element(Msg) {
 }
 
 fn view_result(result: Option(Frequency)) -> Element(Msg) {
-    todo
+  todo
 }
 
 fn view_answers(answers: Answers) -> Element(Msg) {
