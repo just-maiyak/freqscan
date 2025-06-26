@@ -1,20 +1,20 @@
-# discofreq
+# freqscan
 
-[![Package Version](https://img.shields.io/hexpm/v/discofreq)](https://hex.pm/packages/discofreq)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/discofreq/)
+[![Package Version](https://img.shields.io/hexpm/v/freqscan)](https://hex.pm/packages/freqscan)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/freqscan/)
 
 ```sh
-gleam add discofreq@1
+gleam add freqscan@1
 ```
 ```gleam
-import discofreq
+import freqscan
 
 pub fn main() -> Nil {
   // TODO: An example of the project in use
 }
 ```
 
-Further documentation can be found at <https://hexdocs.pm/discofreq>.
+Further documentation can be found at <https://hexdocs.pm/freqscan>.
 
 ## Development
 
