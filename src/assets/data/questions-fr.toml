@@ -1,0 +1,94 @@
+[[questionaire]]
+question = "Un lieu idéal pour écouter de la musique ?"
+
+  [[questionaire.choices]]
+  answer = "En open-air au coucher du soleil 🌞"
+  station = "slower"
+
+  [[questionaire.choices]]
+  answer = "Dans un club cosy avec lumières chaudes 🧡"
+  station = "slow"
+
+  [[questionaire.choices]]
+  answer = "Un club sombre avec strobos et système son massif 🏭"
+  station = "fast"
+
+  [[questionaire.choices]]
+  answer = "Une friche industrielle, avec un sound system brut 🏚️"
+  station = "faster"
+
+[[questionaire]]
+question = "Ton tempo intérieur ce soir ?"
+
+  [[questionaire.choices]]
+  answer = "Smooth, envie de danser en discutant"
+  station = "slower"
+
+  [[questionaire.choices]]
+  answer = "Flottant et groovy en me laissant porter par la mélodie"
+  station = "slow"
+
+  [[questionaire.choices]]
+  answer = "Il faut que je me dépense au rythme du son"
+  station = "fast"
+
+  [[questionaire.choices]]
+  answer = "Rapide, j’ai besoin que ça galope"
+  station = "faster"
+
+[[questionaire]]
+question = "Quel lien tu cherches avec les gens ?"
+
+  [[questionaire.choices]]
+  answer = "Danser ensemble, comme une jam session"
+  station = "slower"
+
+  [[questionaire.choices]]
+  answer = "Partager des regards, des sourires, sans parler"
+  station = "slow"
+
+  [[questionaire.choices]]
+  answer = "Me perdre dans la masse, en rythme"
+  station = "fast"
+
+  [[questionaire.choices]]
+  answer = "Être seul·e dans ma bulle, en transe"
+  station = "faster"
+
+[[questionaire]]
+question = "Si tu devais choisir un détail dans la musique…"
+
+  [[questionaire.choices]]
+  answer = "Une basse funky et des percussions organiques"
+  station = "slower"
+
+  [[questionaire.choices]]
+  answer = "Une nappe aérienne et une mélodie entêtante"
+  station = "slow"
+
+  [[questionaire.choices]]
+  answer = "Un rythme qui se répète et progresse lentement"
+  station = "fast"
+
+  [[questionaire.choices]]
+  answer = "Un kick sec et rapide, qui martelle"
+  station = "faster"
+
+[[questionaire]]
+question = "Qu’est-ce qui t’habite quand tu bouges ?"
+
+  [[questionaire.choices]]
+  answer = "Une joie simple, ancrée, je danse comme je respire"
+  station = "slower"
+
+  [[questionaire.choices]]
+  answer = "Une ivresse douce, entre imaginaire et mouvement"
+  station = "slow"
+
+  [[questionaire.choices]]
+  answer = "Une tension libérée, je tape du pied en rythme"
+  station = "fast"
+
+  [[questionaire.choices]]
+  answer = "Une transe étrange, presque mystique"
+  station = "faster"

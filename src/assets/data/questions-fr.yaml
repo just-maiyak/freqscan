@@ -1,0 +1,51 @@
+questionaire:
+  - question: "Un lieu idéal pour écouter de la musique ?"
+    choices:
+      - answer: "En open-air au coucher du soleil 🌞"
+        station: slower
+      - answer: "Dans un club cosy avec lumières chaudes 🧡"
+        station: slow
+      - answer: "Un club sombre avec strobos et système son massif 🏭"
+        station: fast
+      - answer: "Une friche industrielle, avec un sound system brut 🏚️"
+        station: faster
+  - question: "Ton tempo intérieur ce soir ?"
+    choices:
+      - answer: "Smooth, envie de danser en discutant"
+        station: slower
+      - answer: "Flottant et groovy en me laissant porter par la mélodie"
+        station: slow
+      - answer: "Il faut que je me dépense au rythme du son"
+        station: fast
+      - answer: "Rapide, j’ai besoin que ça galope"
+        station: faster
+  - question: "Quel lien tu cherches avec les gens ?"
+    choices:
+      - answer: "Danser ensemble, comme une jam session"
+        station: slower
+      - answer: "Partager des regards, des sourires, sans parler"
+        station: slow
+      - answer: "Me perdre dans la masse, en rythme"
+        station: fast
+      - answer: "Être seul·e dans ma bulle, en transe"
+        station: faster
+  - question: "Si tu devais choisir un détail dans la musique…"
+    choices:
+      - answer: "Une basse funky et des percussions organiques"
+        station: slower
+      - answer: "Une nappe aérienne et une mélodie entêtante"
+        station: slow
+      - answer: "Un rythme qui se répète et progresse lentement"
+        station: fast
+      - answer: "Un kick sec et rapide, qui martelle"
+        station: faster
+  - question: "Qu’est-ce qui t’habite quand tu bouges ?"
+    choices:
+      - answer: "Une joie simple, ancrée, je danse comme je respire"
+        station: slower
+      - answer: "Une ivresse douce, entre imaginaire et mouvement"
+        station: slow
+      - answer: "Une tension libérée, je tape du pied en rythme"
+        station: fast
+      - answer: "Une transe étrange, presque mystique"
+        station: faster
