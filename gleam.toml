@@ -1,4 +1,4 @@
-name = "discofreq"
+name = "freqscan"
 version = "1.0.0"
 target = "javascript"
 
