@@ -2,7 +2,7 @@
 
 import gleam/int
 import gleam/list
-import gleam/option.{type Option, Some}
+import gleam/option.{type Option, None, Some}
 import lustre
 import lustre/attribute
 import lustre/effect.{type Effect}
@@ -103,7 +103,7 @@ fn init(_) -> #(Model, Effect(Msg)) {
 
 type Msg {
   StartQuizz
-  NextQuestion(choice: Choice)
+  NextQuestion(choice: Option(Choice))
   PreviousQuestion
   FetchResults(answers: Answers)
   StartOver
@@ -124,7 +124,10 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
         effect.none(),
       )
     }
-    NextQuestion(previous_choice) ->
+    NextQuestion(None) -> {
+      #(model, effect.none())
+    }
+    NextQuestion(Some(previous_choice)) ->
       case model.current_page, model.next_questions {
         Prompt(current_quesetion), [next_question, ..rest] -> #(
           Model(
@@ -171,13 +174,12 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
 // VIEW    ------------------------------------------------
 
 fn view(model: Model) -> Element(Msg) {
+  let total_questions = list.length(questions)
+  let current_question = list.length(model.previous_questions) + 1
   case model {
     Model(current_page: Home, ..) -> view_home()
     Model(current_page: Prompt(question), ..) ->
-      view_prompt(
-        question,
-        list.length(questions) - list.length(model.next_questions),
-      )
+      view_prompt(question, total_questions, current_question)
     Model(current_page: LoadingResult, ..) -> view_loading()
     Model(current_page: Result, ..) -> view_result(model.result)
   }
@@ -304,9 +306,13 @@ fn view_logos() -> Element(Msg) {
   ])
 }
 
-fn view_prompt(question: Question, question_number: Int) -> Element(Msg) {
+fn view_prompt(
+  question: Question,
+  total_questions: Int,
+  question_number: Int,
+) -> Element(Msg) {
   view_hero([
-    view_step_indicator(5, question_number),
+    view_step_indicator(total_questions, question_number),
     html.h1(
       [
         attribute.class(
@@ -319,7 +325,7 @@ fn view_prompt(question: Question, question_number: Int) -> Element(Msg) {
       [html.text(question.question)],
     ),
     view_choices(question.choices),
-    view_navigation(question_number),
+    view_navigation(total_questions, question_number),
   ])
 }
 
@@ -372,21 +378,30 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
       attribute.class(
         "btn btn-sm @lg:portrait:btn-md @4xl:btn-lg rounded-3xl h-lg px-5",
       ),
-      event.on_click(NextQuestion(choice)),
+      event.on_click(NextQuestion(Some(choice))),
     ],
     [html.text(choice.answer)],
   )
 }
 
-fn view_navigation(page: Int) -> Element(Msg) {
+fn view_navigation(total_steps: Int, current_step: Int) -> Element(Msg) {
   html.div([attribute.class("w-full flex place-content-around")], [
     html.button(
       [
         attribute.class("btn"),
-        attribute.disabled(page == 1),
+        attribute.disabled(current_step == 1),
         event.on_click(PreviousQuestion),
       ],
       [html.text("Précédent")],
+    ),
+    html.button(
+      [attribute.class("btn btn-primary"), event.on_click(NextQuestion(None))],
+      [
+        html.text(case current_step == total_steps {
+          True -> "Terminer"
+          False -> "Suivant"
+        }),
+      ],
     ),
   ])
 }
