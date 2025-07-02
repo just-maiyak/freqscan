@@ -203,7 +203,7 @@ fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
       html.div(
         [
           attribute.class(
-            "hero-content size-fit flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
+            "hero-content flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
           ),
         ],
         content,
@@ -306,17 +306,7 @@ fn view_logos() -> Element(Msg) {
 
 fn view_question(question: Question, question_number: Int) -> Element(Msg) {
   view_hero([
-    html.p(
-      [
-        attribute.class(
-          "w-fit px-4 pb-1 text-md "
-          <> "@lg:text-lg "
-          <> "@4xl:text-2xl "
-          <> "justify-self-center text-neutral font-semibold font-darker rounded-4xl bg-primary",
-        ),
-      ],
-      [html.text("Question " <> int.to_string(question_number))],
-    ),
+    view_step_indicator(5, question_number),
     html.h1(
       [
         attribute.class(
@@ -343,6 +333,35 @@ fn view_question(question: Question, question_number: Int) -> Element(Msg) {
       html.text("Précédent"),
     ]),
   ])
+}
+
+fn view_step_indicator(total_steps: Int, current_step: Int) -> Element(Msg) {
+  let steps = list.range(1, total_steps)
+  html.ul(
+    [
+      attribute.class(
+        "steps text-center text-neutral font-semibold font-darker text-xl",
+      ),
+    ],
+    list.map(steps, fn(step) {
+      html.li(
+        [
+          attribute.class(
+            "step"
+            <> case step <= current_step {
+              True -> " step-primary"
+              False -> ""
+            },
+          ),
+        ],
+        [
+          html.span([attribute.class("step-icon place-content-center")], [
+            step |> int.to_string |> html.text,
+          ]),
+        ],
+      )
+    }),
+  )
 }
 
 fn view_choice_button(choice: Choice) -> Element(Msg) {
@@ -419,14 +438,14 @@ const questions: List(Question) = [
   Question(
     question: "Un lieu idéal pour écouter de la musique ?",
     choices: [
-      Choice(answer: "En open-air au coucher du soleil 🌞", station: Slower),
-      Choice(answer: "Dans un club cosy avec lumières chaudes 🧡", station: Slow),
+      Choice(answer: "En plein air, au coucher du soleil 🌞", station: Slower),
+      Choice(answer: "Un rooftop cosy, avec lumières chaudes 🧡", station: Slow),
       Choice(
-        answer: "Un club sombre avec strobos et système son massif 🏭",
+        answer: "Un sous-sol moite, sombre et un systeme son bien calé 🏭",
         station: Fast,
       ),
       Choice(
-        answer: "Une friche industrielle, avec un sound system brut 🏚️",
+        answer: "Une friche industrielle, avec un maxi mur de son 🏚️",
         station: Faster,
       ),
     ],
@@ -436,11 +455,11 @@ const questions: List(Question) = [
     choices: [
       Choice(answer: "Smooth, envie de danser en discutant", station: Slower),
       Choice(
-        answer: "Flottant et groovy en me laissant porter par la mélodie",
+        answer: "Flottant et groovy, je me laisse porter par la mélodie",
         station: Slow,
       ),
       Choice(
-        answer: "Il faut que je me dépense au rythme du son",
+        answer: "Soutenu, il faut que je me dépense au rythme du son",
         station: Fast,
       ),
       Choice(answer: "Rapide, j’ai besoin que ça galope", station: Faster),
@@ -461,26 +480,26 @@ const questions: List(Question) = [
   Question(
     question: "Si tu devais choisir un détail dans la musique…",
     choices: [
+      Choice(answer: "Une basse funky, une voix attachante", station: Slower),
       Choice(
-        answer: "Une basse funky et des percussions organiques",
-        station: Slower,
-      ),
-      Choice(
-        answer: "Une nappe aérienne et une mélodie entêtante",
+        answer: "Des percussions organiques, une mélodie puissante",
         station: Slow,
       ),
       Choice(
-        answer: "Un rythme qui se répète et progresse lentement",
+        answer: "Un ostinato entêtant, des synthés abstraits",
         station: Fast,
       ),
-      Choice(answer: "Un kick sec et rapide, qui martelle", station: Faster),
+      Choice(
+        answer: "Un rythme extatique, des synthés comme des lasers",
+        station: Faster,
+      ),
     ],
   ),
   Question(
     question: "Qu’est-ce qui t’habite quand tu bouges ?",
     choices: [
       Choice(
-        answer: "Une joie simple, ancrée, je danse comme je respire",
+        answer: "Une joie simple ancrée, je danse comme je respire",
         station: Slower,
       ),
       Choice(
