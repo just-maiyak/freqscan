@@ -174,7 +174,7 @@ fn view(model: Model) -> Element(Msg) {
   case model {
     Model(current_page: Home, ..) -> view_home()
     Model(current_page: Prompt(question), ..) ->
-      view_question(
+      view_prompt(
         question,
         list.length(questions) - list.length(model.next_questions),
       )
@@ -304,7 +304,7 @@ fn view_logos() -> Element(Msg) {
   ])
 }
 
-fn view_question(question: Question, question_number: Int) -> Element(Msg) {
+fn view_prompt(question: Question, question_number: Int) -> Element(Msg) {
   view_hero([
     view_step_indicator(5, question_number),
     html.h1(
@@ -318,20 +318,8 @@ fn view_question(question: Question, question_number: Int) -> Element(Msg) {
       ],
       [html.text(question.question)],
     ),
-    html.div(
-      [
-        attribute.class(
-          "max-w-2xs "
-          <> "portrait:flex portrait:flex-col "
-          <> "landscape:grid landscape:grid-cols-2 landscape:content-center "
-          <> "@lg:max-w-none h-max place-items-center gap-2",
-        ),
-      ],
-      list.map(list.shuffle(question.choices), view_choice_button),
-    ),
-    html.button([attribute.class("btn"), event.on_click(PreviousQuestion)], [
-      html.text("Précédent"),
-    ]),
+    view_choices(question.choices),
+    view_navigation(question_number),
   ])
 }
 
@@ -364,6 +352,20 @@ fn view_step_indicator(total_steps: Int, current_step: Int) -> Element(Msg) {
   )
 }
 
+fn view_choices(choices: List(Choice)) -> Element(Msg) {
+  html.div(
+    [
+      attribute.class(
+        "max-w-2xs "
+        <> "portrait:flex portrait:flex-col "
+        <> "landscape:grid landscape:grid-cols-2 landscape:content-center "
+        <> "@lg:max-w-none h-max place-items-center gap-2",
+      ),
+    ],
+    list.map(list.shuffle(choices), view_choice_button),
+  )
+}
+
 fn view_choice_button(choice: Choice) -> Element(Msg) {
   html.button(
     [
@@ -374,6 +376,19 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
     ],
     [html.text(choice.answer)],
   )
+}
+
+fn view_navigation(page: Int) -> Element(Msg) {
+  html.div([attribute.class("w-full flex place-content-around")], [
+    html.button(
+      [
+        attribute.class("btn"),
+        attribute.disabled(page == 1),
+        event.on_click(PreviousQuestion),
+      ],
+      [html.text("Précédent")],
+    ),
+  ])
 }
 
 fn view_loading() -> Element(Msg) {
