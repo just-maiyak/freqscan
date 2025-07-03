@@ -271,23 +271,7 @@ fn view_header() -> Element(Msg) {
         "flex flex-row h-24 w-full bg-repeat-x place-self-start bg-[url(/src/assets/dashed-line-top.svg)]",
       ),
     ],
-    [
-      html.label([attribute.class(" p-8 swap swap-rotate z-20 ")], [
-        html.input([
-          attribute.type_("checkbox"),
-          attribute.class("theme-controller"),
-          attribute.value("station-r-light"),
-        ]),
-        html.img([
-          attribute.class("swap-on h-10 w-10 fill-current"),
-          attribute.src("./src/assets/sun.svg"),
-        ]),
-        html.img([
-          attribute.class("swap-off h-10 w-10 fill-current"),
-          attribute.src("./src/assets/moon.svg"),
-        ]),
-      ]),
-    ],
+    [],
   )
 }
 
@@ -364,7 +348,7 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
   html.div(
     [
       attribute.class(
-        "flex flex-col place-items-center gap-3 w-full my-6 @lg:landscape:my-1 "
+        "flex flex-col place-items-center gap-2 w-full my-6 @lg:landscape:my-1 "
         <> "@lg:w-3xl @4xl:w-4xl",
       ),
     ],
@@ -374,9 +358,13 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
           "input @xl:input-lg @4xl:input-xl "
           <> "w-full mb-2 px-6 pb-1 "
           <> "font-darker "
-          <> "text-xl @xl:text-2xl @4xl:text-3xl",
+          <> "text-xl @lg:text-2xl @4xl:text-3xl "
+          <> "text-base-content font-medium",
         ),
         attribute.placeholder("Écris ta réponse"),
+      ]),
+      html.p([attribute.class("font-darker pb-1 @lg:text-xl")], [
+        html.text("En manque d'inspi ?"),
       ]),
       html.div(
         [
@@ -395,7 +383,13 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
   html.button(
     [
       attribute.class(
-        "btn btn-xs " <> "h-lg px-5 pb-1 " <> "text-sm @lg:text-lg",
+        "btn btn-soft btn-xs "
+        <> "px-5 pb-1 "
+        <> "opacity-50 shadow-none "
+        <> "transition "
+        <> "text-sm @lg:text-lg "
+        <> "hover:opacity-90 hover:shadow-(color:--color-primary) "
+        <> "active:shadow-md active:shadow-(color:--color-primary) active:opacity-100",
       ),
       event.on_click(NextQuestion(Some(choice))),
     ],
@@ -408,10 +402,11 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
 }
 
 fn view_navigation(total_steps: Int, current_step: Int) -> Element(Msg) {
+  let common_styling = "btn btn-sm @lg:btn-md pb-1 @lg:text-md @4xl:text-lg"
   html.div([attribute.class("w-full flex place-content-around font-darker")], [
     html.button(
       [
-        attribute.class("btn @xl:btn-md @4xl:btn-lg pb-1"),
+        attribute.class(common_styling),
         attribute.disabled(current_step == 1),
         event.on_click(PreviousQuestion),
       ],
@@ -419,7 +414,7 @@ fn view_navigation(total_steps: Int, current_step: Int) -> Element(Msg) {
     ),
     html.button(
       [
-        attribute.class("btn btn-primary @xl:btn-md @4xl:btn-lg pb-1"),
+        attribute.class(common_styling <> " btn-primary"),
         event.on_click(NextQuestion(None)),
       ],
       [
