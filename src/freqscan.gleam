@@ -3,6 +3,8 @@
 import gleam/int
 import gleam/list
 import gleam/option.{type Option, None, Some}
+import gleam/result
+import gleam/string
 import lustre
 import lustre/attribute
 import lustre/effect.{type Effect}
@@ -235,7 +237,7 @@ fn view_home() -> Element(Msg) {
           "w-2xs px-3 text-sm "
           <> "@lg:w-md @lg:px-5 @lg:text-lg "
           <> "@4xl:w-xl @lg:px-6 @4xl:text-xl "
-          <> "font-normal text-base-content font-helvetica-neue",
+          <> "font-normal text-base-content font-darker",
         ),
       ],
       [
@@ -250,10 +252,10 @@ fn view_home() -> Element(Msg) {
     html.button(
       [
         attribute.class(
-          "btn btn-sm "
-          <> "@lg:btn-md "
-          <> "@4xl:btn-xl "
-          <> "btn-primary w-fit m-4 font-helvetica-neue",
+          "btn btn-sm btn-primary rounded-none w-fit m-4 pb-1 "
+          <> "@lg:btn-md @4xl:btn-xl "
+          <> "font-darker "
+          <> "text-xl @lg:text-2xl @4xl:text-3xl",
         ),
         event.on_click(StartQuizz),
       ],
@@ -266,7 +268,7 @@ fn view_header() -> Element(Msg) {
   html.header(
     [
       attribute.class(
-        "flex flex-row w-full bg-repeat-x place-self-start bg-[url(/src/assets/dashed-line-top.svg)]",
+        "flex flex-row h-24 w-full bg-repeat-x place-self-start bg-[url(/src/assets/dashed-line-top.svg)]",
       ),
     ],
     [
@@ -316,7 +318,7 @@ fn view_prompt(
     html.h1(
       [
         attribute.class(
-          "mb-4 p-2 text-2xl "
+          "p-2 text-2xl "
           <> "@lg:text-3xl "
           <> "@4xl:text-5xl "
           <> "text-neutral font-normal italic font-obviously tracking-[-.08em]",
@@ -349,7 +351,7 @@ fn view_step_indicator(total_steps: Int, current_step: Int) -> Element(Msg) {
           ),
         ],
         [
-          html.span([attribute.class("step-icon place-content-center")], [
+          html.span([attribute.class("pb-1 step-icon place-content-center")], [
             step |> int.to_string |> html.text,
           ]),
         ],
@@ -362,13 +364,30 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
   html.div(
     [
       attribute.class(
-        "max-w-2xs "
-        <> "portrait:flex portrait:flex-col "
-        <> "landscape:grid landscape:grid-cols-2 landscape:content-center "
-        <> "@lg:max-w-none h-max place-items-center gap-2",
+        "flex flex-col place-items-center gap-3 w-full my-6 @lg:landscape:my-1 "
+        <> "@lg:w-3xl @4xl:w-4xl",
       ),
     ],
-    list.map(list.shuffle(choices), view_choice_button),
+    [
+      html.input([
+        attribute.class(
+          "input @xl:input-lg @4xl:input-xl "
+          <> "w-full mb-2 px-6 pb-1 "
+          <> "font-darker "
+          <> "text-xl @xl:text-2xl @4xl:text-3xl",
+        ),
+        attribute.placeholder("Écris ta réponse"),
+      ]),
+      html.div(
+        [
+          attribute.class(
+            "flex flex-wrap place-content-center "
+            <> "place-items-center gap-2 font-darker",
+          ),
+        ],
+        list.map(list.shuffle(choices), view_choice_button),
+      ),
+    ],
   )
 }
 
@@ -376,26 +395,33 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
   html.button(
     [
       attribute.class(
-        "btn btn-sm @lg:portrait:btn-md @4xl:btn-lg rounded-3xl h-lg px-5",
+        "btn btn-xs " <> "h-lg px-5 pb-1 " <> "text-sm @lg:text-lg",
       ),
       event.on_click(NextQuestion(Some(choice))),
     ],
-    [html.text(choice.answer)],
+    [
+      html.text(
+        choice.answer |> string.split(", ") |> list.first |> result.unwrap(""),
+      ),
+    ],
   )
 }
 
 fn view_navigation(total_steps: Int, current_step: Int) -> Element(Msg) {
-  html.div([attribute.class("w-full flex place-content-around")], [
+  html.div([attribute.class("w-full flex place-content-around font-darker")], [
     html.button(
       [
-        attribute.class("btn"),
+        attribute.class("btn @xl:btn-md @4xl:btn-lg pb-1"),
         attribute.disabled(current_step == 1),
         event.on_click(PreviousQuestion),
       ],
       [html.text("Précédent")],
     ),
     html.button(
-      [attribute.class("btn btn-primary"), event.on_click(NextQuestion(None))],
+      [
+        attribute.class("btn btn-primary @xl:btn-md @4xl:btn-lg pb-1"),
+        event.on_click(NextQuestion(None)),
+      ],
       [
         html.text(case current_step == total_steps {
           True -> "Terminer"
