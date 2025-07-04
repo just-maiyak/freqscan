@@ -113,6 +113,7 @@ type Msg {
   ChangeField(String)
   FetchResults(answers: Answers)
   StartOver
+  NoOp
 }
 
 fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
@@ -186,6 +187,7 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
       effect.none(),
     )
     FetchResults(answers) -> todo
+    NoOp -> #(model, effect.none())
   }
 }
 
@@ -370,7 +372,7 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
   html.div(
     [
       attribute.class(
-        "flex flex-col place-items-center gap-2 w-full my-6 @lg:landscape:my-1 "
+        "mb-auto flex flex-col place-items-center gap-2 w-full my-6 @lg:landscape:my-1 "
         <> "@lg:w-3xl @4xl:w-4xl",
       ),
     ],
@@ -404,9 +406,13 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
         <> "hover:opacity-90 hover:shadow-(color:--color-primary) "
         <> "active:shadow-md active:shadow-(color:--color-primary) active:opacity-100",
       ),
-      event.on_click(NextQuestion(Some(choice))),
+      event.on_click(ChangeField(answer)),
     ],
-    [html.text(answer |> string.split(", ") |> list.first |> result.unwrap(""))],
+    [
+      html.text(
+        answer |> string.split(", ") |> list.first |> result.unwrap("") <> "…",
+      ),
+    ],
   )
 }
 
@@ -440,6 +446,12 @@ fn view_field_nav(
           attribute.type_("text"),
           attribute.placeholder("Écris ta réponse"),
           event.on_input(ChangeField),
+          event.on_keypress(fn(key) {
+            case key {
+              "Enter" -> NextQuestion(field_content |> option.map(CustomChoice))
+              _ -> NoOp
+            }
+          }),
           attribute.value(field_content |> option.unwrap("")),
         ]),
         html.button(
@@ -448,9 +460,9 @@ fn view_field_nav(
               "btn btn-circle btn-primary btn-xs @lg:btn-sm @4xl:btn-md @lg:text-md @4xl:text-lg font-sans",
             ),
             attribute.disabled(option.is_none(field_content)),
-            event.on_click(
-              NextQuestion(Some(CustomChoice(option.unwrap(field_content, "")))),
-            ),
+            event.on_click(NextQuestion(
+              field_content |> option.map(CustomChoice),
+            )),
           ],
           [
             html.text(case current_step == total_steps {
@@ -548,7 +560,7 @@ const questions: List(Question) = [
     ],
   ),
   Question(
-    question: "Ton tempo intérieur ce soir ?",
+    question: "Quel est ton tempo intérieur ce soir ?",
     choices: [
       PromptChoice(
         answer: "Smooth, envie de danser en discutant",
@@ -566,7 +578,7 @@ const questions: List(Question) = [
     ],
   ),
   Question(
-    question: "Quel lien tu cherches avec les gens ?",
+    question: "Quel lien cherches-tu avec les gens ?",
     choices: [
       PromptChoice(
         answer: "Danser ensemble, comme une jam session",
