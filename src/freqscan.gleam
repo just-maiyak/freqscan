@@ -29,6 +29,7 @@ type Model {
     next_questions: List(Question),
     previous_questions: List(Question),
     current_page: Page,
+    field_content: Option(String),
     result: Option(Frequency),
   )
 }
@@ -51,7 +52,8 @@ type Question {
 }
 
 type Choice {
-  Choice(answer: String, station: Station)
+  PromptChoice(answer: String, station: Station)
+  CustomChoice(text: String)
 }
 
 type Station {
@@ -73,15 +75,15 @@ fn init(_) -> #(Model, Effect(Msg)) {
     Model(
       // answers: [],
       answers: [
-        Choice(
+        PromptChoice(
           answer: "Une joie simple, ancrée, je danse comme je respire",
           station: Slower,
         ),
-        Choice(
+        PromptChoice(
           answer: "Une joie simple, ancrée, je danse comme je respire",
           station: Slower,
         ),
-        Choice(
+        PromptChoice(
           answer: "Une joie simple, ancrée, je danse comme je respire",
           station: Slower,
         ),
@@ -89,6 +91,7 @@ fn init(_) -> #(Model, Effect(Msg)) {
       next_questions: list.shuffle(questions),
       previous_questions: [],
       current_page: Home,
+      field_content: None,
       result: Some(Frequency(
         freq: Faster,
         name: "Hard Speed Radio",
@@ -107,6 +110,7 @@ type Msg {
   StartQuizz
   NextQuestion(choice: Option(Choice))
   PreviousQuestion
+  ChangeField(String)
   FetchResults(answers: Answers)
   StartOver
 }
@@ -137,6 +141,7 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
             answers: [previous_choice, ..model.answers],
             next_questions: rest,
             previous_questions: [current_quesetion, ..model.previous_questions],
+            field_content: None,
             current_page: Prompt(next_question),
           ),
           effect.none(),
@@ -155,12 +160,16 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
     PreviousQuestion -> {
       let assert Prompt(current_question) = model.current_page
       case model.previous_questions, model.answers {
-        [previous_question, ..rest], [_, ..answers] -> #(
+        [previous_question, ..rest], [previous_answer, ..answers] -> #(
           Model(
             ..model,
             current_page: Prompt(previous_question),
             previous_questions: rest,
             next_questions: [current_question, ..model.next_questions],
+            field_content: case previous_answer {
+              CustomChoice(text) -> Some(text)
+              _ -> None
+            },
             answers: answers,
           ),
           effect.none(),
@@ -169,6 +178,13 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
         // Either 1st question or out of bounds
       }
     }
+    ChangeField(text) -> #(
+      Model(..model, field_content: case text {
+        "" -> None
+        _ -> Some(text)
+      }),
+      effect.none(),
+    )
     FetchResults(answers) -> todo
   }
 }
@@ -181,7 +197,12 @@ fn view(model: Model) -> Element(Msg) {
   case model {
     Model(current_page: Home, ..) -> view_home()
     Model(current_page: Prompt(question), ..) ->
-      view_prompt(question, total_questions, current_question)
+      view_prompt(
+        question,
+        total_questions,
+        current_question,
+        model.field_content,
+      )
     Model(current_page: LoadingResult, ..) -> view_loading()
     Model(current_page: Result, ..) -> view_result(model.result)
   }
@@ -288,7 +309,7 @@ fn view_footer() -> Element(Msg) {
 fn view_logos() -> Element(Msg) {
   html.img([
     attribute.class("h-1/2 @lg:portrait:h-3/4 @4xl:h-auto"),
-    attribute.src("./src/assets/logos.svg"),
+    attribute.src("/src/assets/logos.svg"),
   ])
 }
 
@@ -296,6 +317,7 @@ fn view_prompt(
   question: Question,
   total_questions: Int,
   question_number: Int,
+  field_content: Option(String),
 ) -> Element(Msg) {
   view_hero([
     view_step_indicator(total_questions, question_number),
@@ -310,8 +332,8 @@ fn view_prompt(
       ],
       [html.text(question.question)],
     ),
-    view_choices(question.choices),
-    view_navigation(total_questions, question_number),
+    view_field_nav(total_questions, question_number, field_content),
+    question.choices |> view_choices,
   ])
 }
 
@@ -353,16 +375,6 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
       ),
     ],
     [
-      html.input([
-        attribute.class(
-          "input @xl:input-lg @4xl:input-xl "
-          <> "w-full mb-2 px-6 pb-1 "
-          <> "font-darker "
-          <> "text-xl @lg:text-2xl @4xl:text-3xl "
-          <> "text-base-content font-medium",
-        ),
-        attribute.placeholder("Écris ta réponse"),
-      ]),
       html.p([attribute.class("font-darker pb-1 @lg:text-xl")], [
         html.text("En manque d'inspi ?"),
       ]),
@@ -373,13 +385,14 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
             <> "place-items-center gap-2 font-darker",
           ),
         ],
-        list.map(list.shuffle(choices), view_choice_button),
+        list.map(choices, view_choice_button),
       ),
     ],
   )
 }
 
 fn view_choice_button(choice: Choice) -> Element(Msg) {
+  let assert PromptChoice(answer, _) = choice
   html.button(
     [
       attribute.class(
@@ -393,35 +406,59 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
       ),
       event.on_click(NextQuestion(Some(choice))),
     ],
-    [
-      html.text(
-        choice.answer |> string.split(", ") |> list.first |> result.unwrap(""),
-      ),
-    ],
+    [html.text(answer |> string.split(", ") |> list.first |> result.unwrap(""))],
   )
 }
 
-fn view_navigation(total_steps: Int, current_step: Int) -> Element(Msg) {
-  let common_styling = "btn btn-sm @lg:btn-md pb-1 @lg:text-md @4xl:text-lg"
-  html.div([attribute.class("w-full flex place-content-around font-darker")], [
+fn view_field_nav(
+  total_steps: Int,
+  current_step: Int,
+  field_content: Option(String),
+) -> Element(Msg) {
+  html.div([attribute.class("flex flex-row w-full place-items-center gap-2")], [
     html.button(
       [
-        attribute.class(common_styling),
-        attribute.disabled(current_step == 1),
+        attribute.class("btn btn-circle btn-sm @lg:btn-md @4xl:btn-lg"),
+        attribute.hidden(current_step == 1),
         event.on_click(PreviousQuestion),
       ],
-      [html.text("Précédent")],
+      [html.text("←")],
     ),
-    html.button(
+    html.label(
       [
-        attribute.class(common_styling <> " btn-primary"),
-        event.on_click(NextQuestion(None)),
+        attribute.class(
+          "input input-md rounded-full @lg:input-lg @4xl:input-xl "
+          <> "w-full "
+          <> "font-darker "
+          <> "text-xl @lg:text-2xl @4xl:text-3xl "
+          <> "text-base-content font-medium",
+        ),
       ],
       [
-        html.text(case current_step == total_steps {
-          True -> "Terminer"
-          False -> "Suivant"
-        }),
+        html.input([
+          attribute.class("grow pb-1 pl-3"),
+          attribute.type_("text"),
+          attribute.placeholder("Écris ta réponse"),
+          event.on_input(ChangeField),
+          attribute.value(field_content |> option.unwrap("")),
+        ]),
+        html.button(
+          [
+            attribute.class(
+              "btn btn-circle btn-primary btn-xs @lg:btn-sm @4xl:btn-md @lg:text-md @4xl:text-lg font-sans",
+            ),
+            attribute.disabled(option.is_none(field_content)),
+            event.on_click(
+              NextQuestion(Some(CustomChoice(option.unwrap(field_content, "")))),
+            ),
+          ],
+          [
+            html.text(case current_step == total_steps {
+              True -> "✓"
+              False -> "→"
+            }),
+          ],
+        ),
       ],
     ),
   ])
@@ -475,10 +512,13 @@ fn view_answers(answers: Answers) -> Element(Msg) {
   html.div(
     [],
     list.map(answers, fn(choice) {
-      html.section([attribute.class("text-neutral-content")], [
-        html.p([], [html.text(choice.answer)]),
-        html.p([], [choice.station |> station_to_string |> html.text]),
-      ])
+      html.section([attribute.class("text-neutral-content")], case choice {
+        PromptChoice(answer, station) -> [
+          html.p([], [html.text(answer)]),
+          html.p([], [station |> station_to_string |> html.text]),
+        ]
+        CustomChoice(text) -> [html.p([], [html.text(text)])]
+      })
     }),
   )
 }
@@ -489,13 +529,19 @@ const questions: List(Question) = [
   Question(
     question: "Un lieu idéal pour écouter de la musique ?",
     choices: [
-      Choice(answer: "En plein air, au coucher du soleil 🌞", station: Slower),
-      Choice(answer: "Un rooftop cosy, avec lumières chaudes 🧡", station: Slow),
-      Choice(
+      PromptChoice(
+        answer: "En plein air, au coucher du soleil 🌞",
+        station: Slower,
+      ),
+      PromptChoice(
+        answer: "Un rooftop cosy, avec lumières chaudes 🧡",
+        station: Slow,
+      ),
+      PromptChoice(
         answer: "Un sous-sol moite, sombre et un systeme son bien calé 🏭",
         station: Fast,
       ),
-      Choice(
+      PromptChoice(
         answer: "Une friche industrielle, avec un maxi mur de son 🏚️",
         station: Faster,
       ),
@@ -504,43 +550,55 @@ const questions: List(Question) = [
   Question(
     question: "Ton tempo intérieur ce soir ?",
     choices: [
-      Choice(answer: "Smooth, envie de danser en discutant", station: Slower),
-      Choice(
+      PromptChoice(
+        answer: "Smooth, envie de danser en discutant",
+        station: Slower,
+      ),
+      PromptChoice(
         answer: "Flottant et groovy, je me laisse porter par la mélodie",
         station: Slow,
       ),
-      Choice(
+      PromptChoice(
         answer: "Soutenu, il faut que je me dépense au rythme du son",
         station: Fast,
       ),
-      Choice(answer: "Rapide, j’ai besoin que ça galope", station: Faster),
+      PromptChoice(answer: "Rapide, j’ai besoin que ça galope", station: Faster),
     ],
   ),
   Question(
     question: "Quel lien tu cherches avec les gens ?",
     choices: [
-      Choice(answer: "Danser ensemble, comme une jam session", station: Slower),
-      Choice(
+      PromptChoice(
+        answer: "Danser ensemble, comme une jam session",
+        station: Slower,
+      ),
+      PromptChoice(
         answer: "Partager des regards, des sourires, sans parler",
         station: Slow,
       ),
-      Choice(answer: "Me perdre dans la masse, en rythme", station: Fast),
-      Choice(answer: "Être seul·e dans ma bulle, en transe", station: Faster),
+      PromptChoice(answer: "Me perdre dans la masse, en rythme", station: Fast),
+      PromptChoice(
+        answer: "Être seul·e dans ma bulle, en transe",
+        station: Faster,
+      ),
     ],
   ),
   Question(
     question: "Si tu devais choisir un détail dans la musique…",
     choices: [
-      Choice(answer: "Une basse funky, une voix attachante", station: Slower),
-      Choice(
+      PromptChoice(
+        answer: "Une basse funky, une voix attachante",
+        station: Slower,
+      ),
+      PromptChoice(
         answer: "Des percussions organiques, une mélodie puissante",
         station: Slow,
       ),
-      Choice(
+      PromptChoice(
         answer: "Un ostinato entêtant, des synthés abstraits",
         station: Fast,
       ),
-      Choice(
+      PromptChoice(
         answer: "Un rythme extatique, des synthés comme des lasers",
         station: Faster,
       ),
@@ -549,19 +607,22 @@ const questions: List(Question) = [
   Question(
     question: "Qu’est-ce qui t’habite quand tu bouges ?",
     choices: [
-      Choice(
+      PromptChoice(
         answer: "Une joie simple ancrée, je danse comme je respire",
         station: Slower,
       ),
-      Choice(
+      PromptChoice(
         answer: "Une ivresse douce, entre imaginaire et mouvement",
         station: Slow,
       ),
-      Choice(
+      PromptChoice(
         answer: "Une tension libérée, je tape du pied en rythme",
         station: Fast,
       ),
-      Choice(answer: "Une transe étrange, presque mystique", station: Faster),
+      PromptChoice(
+        answer: "Une transe étrange, presque mystique",
+        station: Faster,
+      ),
     ],
   ),
 ]
