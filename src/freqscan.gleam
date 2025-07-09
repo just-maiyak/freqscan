@@ -41,8 +41,9 @@ type Frequency {
   Frequency(
     freq: Station,
     name: String,
-    adjectives: List(String),
+    verbatims: List(String),
     tags: List(String),
+    artists: List(String),
     playlist: String,
   )
 }
@@ -95,8 +96,9 @@ fn init(_) -> #(Model, Effect(Msg)) {
       result: Some(Frequency(
         freq: Faster,
         name: "Hard Speed Radio",
-        adjectives: ["électrisante", "haletante"],
+        verbatims: ["électrisante", "haletante"],
         tags: ["kick sec", "grosse tabasse"],
+        artists: ["I Hate Models", "Clara Cuvé", "Rebekah"],
         playlist: "https://link.deezer.com/s/30iKS8WFIDokwCdWfihFA",
       )),
     )
@@ -550,7 +552,7 @@ const questions: List(Question) = [
         station: Slow,
       ),
       PromptChoice(
-        answer: "Un sous-sol moite, sombre et un systeme son bien calé 🏭",
+        answer: "Un sous-sol moite, sombre et un systeme son bien réglé 🏭",
         station: Fast,
       ),
       PromptChoice(
