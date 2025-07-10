@@ -90,13 +90,13 @@
   --duotone-gradient: linear-gradient(to bottom, var(--color-accent) 3.8%, var(--color-secondary) 26.35%, var(--color-accent) 56.23%, var(--color-primary) 104.99%);
   --loading-gradient: repeating-linear-gradient(to bottom, var(--color-accent) 0%, var(--color-secondary) 2%, var(--color-accent) 5%, var(--color-neutral) 7%, var(--color-primary) 10%, var(--color-neutral) 13%, var(--color-accent) 16%, var(--color-secondary) 17%, var(--color-accent) 20%, var(--color-accent) 22%, var(--color-secondary) 26%, var(--color-accent) 27%);
 
-  --neutral-grey: #C1B3B3;
+  --neutral-grey: var(--color-accent);
   --darkest-color: black;
-  --house-color: #FF8635;
-  --techno-color: #B68CFE;
+  --house-color: var(--color-secondary);
+  --techno-color: var(--color-primary);
   --house-result-gradient: linear-gradient(179.99deg, var(--neutral-grey) 5.9%, var(--house-color) 19.01%, var(--neutral-grey) 26.35%, var(--house-color) 37.88%, var(--darkest-color) 43.65%, var(--house-color) 54.66%, var(--neutral-grey) 71.96%, var(--neutral-grey) 77.73%, var(--darkest-color) 80.35%, var(--neutral-grey) 89.81%, var(--neutral-grey) 104.99%);
   --techno-result-gradient: linear-gradient(179.99deg, var(--neutral-grey) 5.9%, var(--techno-color) 19.37%, var(--neutral-grey) 24.77%, var(--techno-color) 36.83%, var(--darkest-color) 43.65%, var(--techno-color) 54.66%, var(--neutral-grey) 71.96%, var(--neutral-grey) 77.73%, var(--darkest-color) 80.35%, var(--neutral-grey) 89.81%, var(--neutral-grey) 104.99%);
-
+  --header-result-gradient: linear-gradient(179.99deg, var(--color-accent) 5.9%, #FF8635 9.04%, var(--color-accent) 24.25%, #000000 36.83%, #B68CFE 43.65%, #000000 54.66%, var(--color-accent) 71.96%, var(--color-accent) 77.73%, #B68CFE 80.35%, var(--color-accent) 89.81%, #FF8635 101.32%);
 }
 
 
