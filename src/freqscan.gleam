@@ -1,6 +1,8 @@
 // IMPORTS ------------------------------------------------
 
+import gleam/dynamic/decode.{type Decoder}
 import gleam/int
+import gleam/json
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
@@ -11,6 +13,8 @@ import lustre/effect.{type Effect}
 import lustre/element.{type Element}
 import lustre/element/html
 import lustre/event
+
+import rsvp
 
 // MAIN    ------------------------------------------------
 
@@ -37,6 +41,10 @@ type Model {
 type Answers =
   List(Choice)
 
+type Playlist {
+  Playlist(deezer: String, spotify: String)
+}
+
 type Frequency {
   Frequency(
     frequency: Station,
@@ -44,7 +52,7 @@ type Frequency {
     verbatims: List(String),
     tags: List(String),
     artists: List(String),
-    playlist: String,
+    playlist: Playlist,
   )
 }
 
@@ -54,7 +62,7 @@ type Question {
 
 type Choice {
   PromptChoice(answer: String, station: Station)
-  CustomChoice(text: String)
+  CustomChoice(question: String, answer: String)
 }
 
 type Station {
@@ -74,36 +82,75 @@ type Page {
 fn init(_) -> #(Model, Effect(Msg)) {
   let model: Model =
     Model(
-      // answers: [],
-      answers: [
-        PromptChoice(
-          answer: "Une joie simple, ancrée, je danse comme je respire",
-          station: Slower,
-        ),
-        PromptChoice(
-          answer: "Une joie simple, ancrée, je danse comme je respire",
-          station: Slower,
-        ),
-        PromptChoice(
-          answer: "Une joie simple, ancrée, je danse comme je respire",
-          station: Slower,
-        ),
-      ],
+      answers: [],
       next_questions: list.shuffle(questions),
       previous_questions: [],
       current_page: Home,
       field_content: None,
-      result: Some(Frequency(
-        frequency: Faster,
-        name: "Hard Speed Radio",
-        verbatims: ["électrisante", "haletante"],
-        tags: ["kick sec", "grosse tabasse"],
-        artists: ["I Hate Models", "Clara Cuvé", "Rebekah"],
-        playlist: "https://link.deezer.com/s/30iKS8WFIDokwCdWfihFA",
-      )),
+      result: None,
     )
 
   #(model, effect.none())
+}
+
+fn choice_to_json(choice: Choice) -> json.Json {
+  case choice {
+    CustomChoice(question:, answer:) ->
+      json.object([
+        #("question", json.string(question)),
+        #("answer", json.string(answer)),
+      ])
+    _ -> json.int(1)
+  }
+}
+
+fn fetch_frequency(
+  answers: List(Choice),
+  on_response handle_response: fn(Result(Frequency, rsvp.Error)) -> Msg,
+) -> Effect(Msg) {
+  let url = "http://localhost:8000/predict"
+  let decoder = frequency_decoder()
+  let handler = rsvp.expect_json(decoder, handle_response)
+  let body =
+    json.object([#("answers", json.array(answers, of: choice_to_json))])
+
+  rsvp.post(url, body, handler)
+}
+
+fn station_decoder() -> Decoder(Station) {
+  use freq_string <- decode.then(decode.string)
+  case freq_string {
+    "slower" -> decode.success(Faster)
+    "slow" -> decode.success(Fast)
+    "fast" -> decode.success(Slow)
+    "faster" -> decode.success(Slower)
+    _ -> decode.failure(Fast, "")
+  }
+}
+
+fn playlist_decoder() -> Decoder(Playlist) {
+  use deezer <- decode.field("deezer", decode.string)
+  use spotify <- decode.field("spotify", decode.string)
+
+  decode.success(Playlist(deezer:, spotify:))
+}
+
+fn frequency_decoder() -> Decoder(Frequency) {
+  use frequency <- decode.field("frequency", station_decoder())
+  use name <- decode.field("name", decode.string)
+  use verbatims <- decode.field("verbatims", decode.list(decode.string))
+  use tags <- decode.field("tags", decode.list(decode.string))
+  use artists <- decode.field("artists", decode.list(decode.string))
+  use playlist <- decode.field("playlist", playlist_decoder())
+
+  decode.success(Frequency(
+    frequency:,
+    name:,
+    verbatims:,
+    tags:,
+    artists:,
+    playlist:,
+  ))
 }
 
 // UPDATE  ------------------------------------------------
@@ -113,7 +160,7 @@ type Msg {
   NextQuestion(choice: Option(Choice))
   PreviousQuestion
   ChangeField(String)
-  FetchResults(answers: Answers)
+  GotResults(Result(Frequency, rsvp.Error))
   StartOver
   NoOp
 }
@@ -155,7 +202,7 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
             answers: [previous_choice, ..model.answers],
             current_page: LoadingResult,
           ),
-          effect.none(),
+          fetch_frequency(model.answers, GotResults),
           // Here we'll call the API to fetch the results
         )
         Home, _ | LoadingResult, _ | Result, _ -> #(model, effect.none())
@@ -170,7 +217,7 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
             previous_questions: rest,
             next_questions: [current_question, ..model.next_questions],
             field_content: case previous_answer {
-              CustomChoice(text) -> Some(text)
+              CustomChoice(_question, text) -> Some(text)
               _ -> None
             },
             answers: answers,
@@ -188,7 +235,14 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
       }),
       effect.none(),
     )
-    FetchResults(answers) -> todo
+    GotResults(Ok(result)) -> #(
+      Model(..model, current_page: Result, result: Some(result)),
+      effect.none(),
+    )
+    GotResults(Error(error)) -> {
+      echo error
+      #(model, effect.none())
+    }
     NoOp -> #(model, effect.none())
   }
 }
@@ -199,7 +253,7 @@ fn view(model: Model) -> Element(Msg) {
   let total_questions = list.length(questions)
   let current_question = list.length(model.previous_questions) + 1
   case model {
-    Model(current_page: Home, ..) -> view_result(model.result)
+    Model(current_page: Home, ..) -> view_home()
     Model(current_page: Prompt(question), ..) ->
       view_prompt(
         question,
@@ -207,9 +261,8 @@ fn view(model: Model) -> Element(Msg) {
         current_question,
         model.field_content,
       )
-    // Model(current_page: LoadingResult, ..) -> view_loading()
-    Model(current_page: LoadingResult, ..) -> view_result(model.result)
-    Model(current_page: Result, ..) -> view_result(model.result)
+    Model(result: None, ..) -> view_loading()
+    Model(result: Some(result), ..) -> view_result(result)
   }
 }
 
@@ -363,7 +416,12 @@ fn view_prompt(
       ],
       [html.text(question.question)],
     ),
-    view_field_nav(total_questions, question_number, field_content),
+    view_field_nav(
+      total_questions,
+      question_number,
+      question.question,
+      field_content,
+    ),
     question.choices |> view_choices,
   ])
 }
@@ -448,6 +506,7 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
 fn view_field_nav(
   total_steps: Int,
   current_step: Int,
+  current_question: String,
   field_content: Option(String),
 ) -> Element(Msg) {
   html.div([attribute.class("flex flex-row w-full place-items-center gap-2")], [
@@ -477,7 +536,10 @@ fn view_field_nav(
           event.on_input(ChangeField),
           event.on_keypress(fn(key) {
             case key {
-              "Enter" -> NextQuestion(field_content |> option.map(CustomChoice))
+              "Enter" ->
+                NextQuestion(
+                  field_content |> option.map(CustomChoice(current_question, _)),
+                )
               _ -> NoOp
             }
           }),
@@ -490,7 +552,7 @@ fn view_field_nav(
             ),
             attribute.disabled(option.is_none(field_content)),
             event.on_click(NextQuestion(
-              field_content |> option.map(CustomChoice),
+              field_content |> option.map(CustomChoice(current_question, _)),
             )),
           ],
           [
@@ -583,14 +645,13 @@ fn view_result_hero(
   )
 }
 
-fn view_result(result: Option(Frequency)) -> Element(Msg) {
-  let assert Some(frequency) = result
-  view_result_hero(frequency.frequency, [
-    html.h1([attribute.class("text-4xl")], [html.text(frequency.name)]),
-    html.p([], [frequency.frequency |> station_to_string |> html.text]),
-    html.p([], [frequency.verbatims |> string.join(", ") |> html.text]),
-    html.p([], [frequency.tags |> string.join(", ") |> html.text]),
-    html.p([], [frequency.artists |> string.join(", ") |> html.text]),
+fn view_result(result: Frequency) -> Element(Msg) {
+  view_result_hero(result.frequency, [
+    html.h1([attribute.class("text-4xl")], [html.text(result.name)]),
+    html.p([], [result.frequency |> station_to_string |> html.text]),
+    html.p([], [result.verbatims |> string.join(", ") |> html.text]),
+    html.p([], [result.tags |> string.join(", ") |> html.text]),
+    html.p([], [result.artists |> string.join(", ") |> html.text]),
   ])
 }
 
