@@ -39,7 +39,7 @@ type Answers =
 
 type Frequency {
   Frequency(
-    freq: Station,
+    frequency: Station,
     name: String,
     verbatims: List(String),
     tags: List(String),
@@ -94,7 +94,7 @@ fn init(_) -> #(Model, Effect(Msg)) {
       current_page: Home,
       field_content: None,
       result: Some(Frequency(
-        freq: Faster,
+        frequency: Faster,
         name: "Hard Speed Radio",
         verbatims: ["électrisante", "haletante"],
         tags: ["kick sec", "grosse tabasse"],
@@ -199,7 +199,7 @@ fn view(model: Model) -> Element(Msg) {
   let total_questions = list.length(questions)
   let current_question = list.length(model.previous_questions) + 1
   case model {
-    Model(current_page: Home, ..) -> view_home()
+    Model(current_page: Home, ..) -> view_result(model.result)
     Model(current_page: Prompt(question), ..) ->
       view_prompt(
         question,
@@ -207,7 +207,8 @@ fn view(model: Model) -> Element(Msg) {
         current_question,
         model.field_content,
       )
-    Model(current_page: LoadingResult, ..) -> view_loading()
+    // Model(current_page: LoadingResult, ..) -> view_loading()
+    Model(current_page: LoadingResult, ..) -> view_result(model.result)
     Model(current_page: Result, ..) -> view_result(model.result)
   }
 }
@@ -220,7 +221,6 @@ fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
       ),
     ],
     [
-      view_header(),
       html.div(
         [
           attribute.class(
@@ -229,6 +229,7 @@ fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
         ],
         [],
       ),
+      view_header(),
       html.div(
         [
           attribute.class(
@@ -297,6 +298,32 @@ fn view_header() -> Element(Msg) {
       ),
     ],
     [],
+  )
+}
+
+fn view_result_header() -> Element(Msg) {
+  html.header(
+    [attribute.class("flex flex-col w-full place-self-start bg-black")],
+    [
+      html.div(
+        [attribute.class("h-24 w-full bg-(image:--header-result-gradient)")],
+        [],
+      ),
+      html.div([attribute.class("grow flex flex-row-reverse w-full")], [
+        html.div(
+          [
+            attribute.class(
+              "px-3 pb-2 place-content-center "
+              <> "bg-white text-black text-3xl font-light font-obviously",
+            ),
+          ],
+          [
+            html.span([attribute.class("italic")], [html.text("station")]),
+            html.span([attribute.class("font-bold")], [html.text("R")]),
+          ],
+        ),
+      ]),
+    ],
   )
 }
 
@@ -518,23 +545,53 @@ fn view_loading() -> Element(Msg) {
   ])
 }
 
-fn view_result(result: Option(Frequency)) -> Element(Msg) {
-  todo
+fn view_result_hero(
+  frequency: Station,
+  content: List(Element(Msg)),
+) -> Element(Msg) {
+  let background_gradient = case frequency {
+    Slower | Slow -> "bg-(image:--house-result-gradient)"
+    Faster | Fast -> "bg-(image:--techno-result-gradient)"
+  }
+  html.div(
+    [
+      attribute.class(
+        "@container hero size-full min-h-screen min-w-screen "
+        <> background_gradient,
+      ),
+    ],
+    [
+      html.div(
+        [
+          attribute.class(
+            "size-full bg-[url(/src/assets/noise.svg)] mix-blend-soft-light opacity-50 contrast-150",
+          ),
+        ],
+        [],
+      ),
+      view_result_header(),
+      html.div(
+        [
+          attribute.class(
+            "hero-content flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content font-obviously",
+          ),
+        ],
+        content,
+      ),
+      view_footer(),
+    ],
+  )
 }
 
-fn view_answers(answers: Answers) -> Element(Msg) {
-  html.div(
-    [],
-    list.map(answers, fn(choice) {
-      html.section([attribute.class("text-neutral-content")], case choice {
-        PromptChoice(answer, station) -> [
-          html.p([], [html.text(answer)]),
-          html.p([], [station |> station_to_string |> html.text]),
-        ]
-        CustomChoice(text) -> [html.p([], [html.text(text)])]
-      })
-    }),
-  )
+fn view_result(result: Option(Frequency)) -> Element(Msg) {
+  let assert Some(frequency) = result
+  view_result_hero(frequency.frequency, [
+    html.h1([attribute.class("text-4xl")], [html.text(frequency.name)]),
+    html.p([], [frequency.frequency |> station_to_string |> html.text]),
+    html.p([], [frequency.verbatims |> string.join(", ") |> html.text]),
+    html.p([], [frequency.tags |> string.join(", ") |> html.text]),
+    html.p([], [frequency.artists |> string.join(", ") |> html.text]),
+  ])
 }
 
 // DATA    ------------------------------------------------
