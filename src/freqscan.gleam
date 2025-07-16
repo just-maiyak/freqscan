@@ -385,7 +385,7 @@ fn view_footer() -> Element(Msg) {
     view_logos(),
     html.img([
       attribute.class("w-full h-4 @4xl:h-fit object-cover"),
-      attribute.src("/src/assets/dashed-line-bottom.svg"),
+      attribute.src("./src/assets/dashed-line-bottom.svg"),
     ]),
   ])
 }
@@ -393,7 +393,7 @@ fn view_footer() -> Element(Msg) {
 fn view_logos() -> Element(Msg) {
   html.img([
     attribute.class("h-1/2 @lg:portrait:h-3/4 @4xl:h-auto"),
-    attribute.src("/src/assets/logos.svg"),
+    attribute.src("./src/assets/logos.svg"),
   ])
 }
 
@@ -626,7 +626,7 @@ fn view_result_hero(
       html.div(
         [
           attribute.class(
-            "size-full bg-[url(/src/assets/noise.svg)] mix-blend-soft-light opacity-50 contrast-150",
+            "size-full bg-[url(./src/assets/noise.svg)] mix-blend-soft-light opacity-50 contrast-150",
           ),
         ],
         [],

@@ -2,7 +2,6 @@
 *.ez
 /build
 priv
-fonts
 erl_crash.dump
 .direnv
 .DS_Store

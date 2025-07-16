@@ -37,8 +37,10 @@ jobs:
           cp index.html dist/index.html
           cp -r src/assets dist/assets
           cp -r priv dist/priv
-      - name: Update path in index.html to use minified app
-        run: sed -i 's|priv/static/freqscan.mjs|priv/static/freqscan.min.mjs|' dist/index.html
+      - name: Update paths in index.html to use minified app
+        run: |
+          sed -i 's|priv/static/freqscan.mjs|priv/static/freqscan.min.mjs|' dist/index.html
+          sed -i 's|priv/static/freqscan.css|priv/static/freqscan.min.css|' dist/index.html
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
