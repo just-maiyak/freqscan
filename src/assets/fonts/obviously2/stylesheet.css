@@ -1,0 +1,290 @@
+@font-face {
+    font-family: 'Obviously-ExtdLght';
+    src: local('Obviously Extd Lght'), local('Obviously-ExtdLght'),
+        url('Obviously-ExtdLght.woff2') format('woff2'),
+        url('Obviously-ExtdLght.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdMedi';
+    src: local('Obviously Extd Medi'), local('Obviously-ExtdMedi'),
+        url('Obviously-ExtdMedi.woff2') format('woff2'),
+        url('Obviously-ExtdMedi.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-Blck';
+    src: local('Obviously Blck'), local('Obviously-Blck'),
+        url('Obviously-Blck.woff2') format('woff2'),
+        url('Obviously-Blck.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdSemi';
+    src: local('Obviously Extd Semi'), local('Obviously-ExtdSemi'),
+        url('Obviously-ExtdSemi.woff2') format('woff2'),
+        url('Obviously-ExtdSemi.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-BoldItalic';
+    src: local('Obviously Bold Italic'), local('Obviously-BoldItalic'),
+        url('Obviously-BoldItalic.woff2') format('woff2'),
+        url('Obviously-BoldItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-Extd';
+    src: local('Obviously Extd'), local('Obviously-Extd'),
+        url('Obviously-Extd.woff2') format('woff2'),
+        url('Obviously-Extd.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdLghtItalic';
+    src: local('Obviously Extd Lght Italic'), local('Obviously-ExtdLghtItalic'),
+        url('Obviously-ExtdLghtItalic.woff2') format('woff2'),
+        url('Obviously-ExtdLghtItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdBold';
+    src: local('Obviously Extd Bold Bold'), local('Obviously-ExtdBold'),
+        url('Obviously-ExtdBold.woff2') format('woff2'),
+        url('Obviously-ExtdBold.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdBoldItalic';
+    src: local('Obviously Extd Bold Bold Italic'), local('Obviously-ExtdBoldItalic'),
+        url('Obviously-ExtdBoldItalic.woff2') format('woff2'),
+        url('Obviously-ExtdBoldItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdSupr';
+    src: local('Obviously Extd Supr'), local('Obviously-ExtdSupr'),
+        url('Obviously-ExtdSupr.woff2') format('woff2'),
+        url('Obviously-ExtdSupr.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-BlckItalic';
+    src: local('Obviously Blck Italic'), local('Obviously-BlckItalic'),
+        url('Obviously-BlckItalic.woff2') format('woff2'),
+        url('Obviously-BlckItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdSemiItalic';
+    src: local('Obviously Extd Semi Italic'), local('Obviously-ExtdSemiItalic'),
+        url('Obviously-ExtdSemiItalic.woff2') format('woff2'),
+        url('Obviously-ExtdSemiItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdItalic';
+    src: local('Obviously Extd Italic'), local('Obviously-ExtdItalic'),
+        url('Obviously-ExtdItalic.woff2') format('woff2'),
+        url('Obviously-ExtdItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdMediItalic';
+    src: local('Obviously Extd Medi Italic'), local('Obviously-ExtdMediItalic'),
+        url('Obviously-ExtdMediItalic.woff2') format('woff2'),
+        url('Obviously-ExtdMediItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdBlck';
+    src: local('Obviously Extd Blck'), local('Obviously-ExtdBlck'),
+        url('Obviously-ExtdBlck.woff2') format('woff2'),
+        url('Obviously-ExtdBlck.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdThinItalic';
+    src: local('Obviously Extd Thin Italic'), local('Obviously-ExtdThinItalic'),
+        url('Obviously-ExtdThinItalic.woff2') format('woff2'),
+        url('Obviously-ExtdThinItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdThin';
+    src: local('Obviously Extd Thin'), local('Obviously-ExtdThin'),
+        url('Obviously-ExtdThin.woff2') format('woff2'),
+        url('Obviously-ExtdThin.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ExtdBlckItalic';
+    src: local('Obviously Extd Blck Italic'), local('Obviously-ExtdBlckItalic'),
+        url('Obviously-ExtdBlckItalic.woff2') format('woff2'),
+        url('Obviously-ExtdBlckItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-Bold';
+    src: local('Obviously Bold'), local('Obviously-Bold'),
+        url('Obviously-Bold.woff2') format('woff2'),
+        url('Obviously-Bold.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ThinItalic';
+    src: local('Obviously Thin Italic'), local('Obviously-ThinItalic'),
+        url('Obviously-ThinItalic.woff2') format('woff2'),
+        url('Obviously-ThinItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-SemiItalic';
+    src: local('Obviously Semi Italic'), local('Obviously-SemiItalic'),
+        url('Obviously-SemiItalic.woff2') format('woff2'),
+        url('Obviously-SemiItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-Lght';
+    src: local('Obviously Lght'), local('Obviously-Lght'),
+        url('Obviously-Lght.woff2') format('woff2'),
+        url('Obviously-Lght.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-MediItalic';
+    src: local('Obviously Medi Italic'), local('Obviously-MediItalic'),
+        url('Obviously-MediItalic.woff2') format('woff2'),
+        url('Obviously-MediItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-ReguItalic';
+    src: local('Obviously Italic'), local('Obviously-ReguItalic'),
+        url('Obviously-ReguItalic.woff2') format('woff2'),
+        url('Obviously-ReguItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-Semi';
+    src: local('Obviously Semi'), local('Obviously-Semi'),
+        url('Obviously-Semi.woff2') format('woff2'),
+        url('Obviously-Semi.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-LghtItalic';
+    src: local('Obviously Lght Italic'), local('Obviously-LghtItalic'),
+        url('Obviously-LghtItalic.woff2') format('woff2'),
+        url('Obviously-LghtItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-Medi';
+    src: local('Obviously Medi'), local('Obviously-Medi'),
+        url('Obviously-Medi.woff2') format('woff2'),
+        url('Obviously-Medi.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-Thin';
+    src: local('Obviously Thin'), local('Obviously-Thin'),
+        url('Obviously-Thin.woff2') format('woff2'),
+        url('Obviously-Thin.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Obviously-Regu';
+    src: local('Obviously'), local('Obviously-Regu'),
+        url('Obviously-Regu.woff2') format('woff2'),
+        url('Obviously-Regu.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
