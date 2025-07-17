@@ -108,7 +108,7 @@ fn fetch_frequency(
   answers: List(Choice),
   on_response handle_response: fn(Result(Frequency, rsvp.Error)) -> Msg,
 ) -> Effect(Msg) {
-  let url = "http://localhost:8000/predict"
+  let url = "https://freqgen.yefimch.uk/predict"
   let decoder = frequency_decoder()
   let handler = rsvp.expect_json(decoder, handle_response)
   let body =
