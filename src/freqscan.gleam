@@ -270,7 +270,7 @@ fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
   html.div(
     [
       attribute.class(
-        "@container hero size-full min-h-screen min-w-screen bg-(image:--duotone-gradient)",
+        "@container hero flex flex-col size-full min-h-screen bg-(image:--duotone-gradient)",
       ),
     ],
     [
@@ -286,7 +286,7 @@ fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
       html.div(
         [
           attribute.class(
-            "hero-content flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
+            "hero-content grow flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
           ),
         ],
         content,
@@ -459,7 +459,7 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
   html.div(
     [
       attribute.class(
-        "mb-auto flex flex-col place-items-center gap-2 w-full my-6 @lg:landscape:my-1 "
+        "flex flex-col place-items-center gap-2 w-full my-6 @lg:landscape:my-1 "
         <> "@lg:w-3xl @4xl:w-4xl",
       ),
     ],
