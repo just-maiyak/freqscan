@@ -267,35 +267,25 @@ fn view(model: Model) -> Element(Msg) {
 }
 
 fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
-  html.div([], [
-    html.div(
-      [
-        attribute.class(
-          "fixed size-full min-h-screen bg-[url(/src/assets/noise.svg)] mix-blend-screen opacity-30 contrast-150",
-        ),
-      ],
-      [],
-    ),
-    html.div(
-      [
-        attribute.class(
-          "@container hero flex flex-col size-full min-h-screen bg-(image:--duotone-gradient)",
-        ),
-      ],
-      [
-        view_header(),
-        html.div(
-          [
-            attribute.class(
-              "hero-content grow flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
-            ),
-          ],
-          content,
-        ),
-        view_footer(),
-      ],
-    ),
-  ])
+  html.div(
+    [
+      attribute.class(
+        "@container hero flex flex-col size-screen min-w-xs min-h-screen bg-(image:--duotone-gradient)",
+      ),
+    ],
+    [
+      view_header(),
+      html.div(
+        [
+          attribute.class(
+            "hero-content w-screen grow flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
+          ),
+        ],
+        content,
+      ),
+      view_footer(),
+    ],
+  )
 }
 
 fn view_home() -> Element(Msg) {
@@ -349,7 +339,7 @@ fn view_header() -> Element(Msg) {
   html.header(
     [
       attribute.class(
-        "flex flex-row h-24 w-full bg-repeat-x place-self-start bg-[url(/src/assets/dashed-line-top.svg)]",
+        "flex flex-row h-24 w-screen bg-repeat-x place-self-start bg-[url(/src/assets/dashed-line-top.svg)]",
       ),
     ],
     [],
@@ -358,13 +348,13 @@ fn view_header() -> Element(Msg) {
 
 fn view_result_header() -> Element(Msg) {
   html.header(
-    [attribute.class("flex flex-col w-full place-self-start bg-black")],
+    [attribute.class("flex flex-col w-screen place-self-start bg-black")],
     [
       html.div(
-        [attribute.class("h-24 w-full bg-(image:--header-result-gradient)")],
+        [attribute.class("h-24 w-screen bg-(image:--header-result-gradient)")],
         [],
       ),
-      html.div([attribute.class("grow flex flex-row-reverse w-full")], [
+      html.div([attribute.class("grow flex flex-row-reverse w-screen")], [
         html.div(
           [
             attribute.class(
@@ -383,19 +373,17 @@ fn view_result_header() -> Element(Msg) {
 }
 
 fn view_footer() -> Element(Msg) {
-  html.footer([attribute.class("footer place-self-end place-items-end gap-0")], [
-    view_logos(),
+  html.footer([attribute.class("footer place-self-end gap-0")], [
     html.img([
-      attribute.class("w-full h-4 @4xl:h-fit object-cover"),
+      attribute.class("h-1/2 place-self-end @lg:portrait:h-2/3 @4xl:h-auto"),
+      attribute.src("./src/assets/logos.svg"),
+    ]),
+    html.img([
+      attribute.class(
+        "h-4 @lg:h-6 @4xl:h-8 w-full place-self-center object-cover",
+      ),
       attribute.src("./src/assets/dashed-line-bottom.svg"),
     ]),
-  ])
-}
-
-fn view_logos() -> Element(Msg) {
-  html.img([
-    attribute.class("h-1/2 @lg:portrait:h-3/4 @4xl:h-auto"),
-    attribute.src("./src/assets/logos.svg"),
   ])
 }
 
@@ -461,7 +449,7 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
   html.div(
     [
       attribute.class(
-        "flex flex-col place-items-center gap-2 w-full my-6 @lg:landscape:my-1 "
+        "flex flex-col place-items-center gap-2 w-screen my-6 @lg:landscape:my-1 "
         <> "@lg:w-3xl @4xl:w-4xl",
       ),
     ],
@@ -511,62 +499,65 @@ fn view_field_nav(
   current_question: String,
   field_content: Option(String),
 ) -> Element(Msg) {
-  html.div([attribute.class("flex flex-row w-full place-items-center gap-2")], [
-    html.button(
-      [
-        attribute.class("btn btn-circle btn-sm @lg:btn-md @4xl:btn-lg"),
-        attribute.hidden(current_step == 1),
-        event.on_click(PreviousQuestion),
-      ],
-      [html.text("←")],
-    ),
-    html.label(
-      [
-        attribute.class(
-          "input input-md rounded-full @lg:input-lg @4xl:input-xl "
-          <> "w-full "
-          <> "font-darker "
-          <> "text-xl @lg:text-2xl @4xl:text-3xl "
-          <> "text-base-content font-medium",
-        ),
-      ],
-      [
-        html.input([
-          attribute.class("grow pb-1 pl-3"),
-          attribute.type_("text"),
-          attribute.placeholder("Écris ta réponse"),
-          event.on_input(ChangeField),
-          event.on_keypress(fn(key) {
-            case key {
-              "Enter" ->
-                NextQuestion(
-                  field_content |> option.map(CustomChoice(current_question, _)),
-                )
-              _ -> NoOp
-            }
-          }),
-          attribute.value(field_content |> option.unwrap("")),
-        ]),
-        html.button(
-          [
-            attribute.class(
-              "btn btn-circle btn-primary btn-xs @lg:btn-sm @4xl:btn-md @lg:text-md @4xl:text-lg font-sans",
-            ),
-            attribute.disabled(option.is_none(field_content)),
-            event.on_click(NextQuestion(
-              field_content |> option.map(CustomChoice(current_question, _)),
-            )),
-          ],
-          [
-            html.text(case current_step == total_steps {
-              True -> "✓"
-              False -> "→"
+  html.div(
+    [attribute.class("flex flex-row w-full place-items-center gap-2 px-2")],
+    [
+      html.button(
+        [
+          attribute.class("btn btn-circle btn-sm @lg:btn-md @4xl:btn-lg"),
+          attribute.hidden(current_step == 1),
+          event.on_click(PreviousQuestion),
+        ],
+        [html.text("←")],
+      ),
+      html.label(
+        [
+          attribute.class(
+            "grow input input-md rounded-full @lg:input-lg @4xl:input-xl "
+            <> "font-darker "
+            <> "text-xl @lg:text-2xl @4xl:text-3xl "
+            <> "text-base-content font-medium",
+          ),
+        ],
+        [
+          html.input([
+            attribute.class("pb-1 pl-3"),
+            attribute.type_("text"),
+            attribute.placeholder("Écris ta réponse"),
+            event.on_input(ChangeField),
+            event.on_keypress(fn(key) {
+              case key {
+                "Enter" ->
+                  NextQuestion(
+                    field_content
+                    |> option.map(CustomChoice(current_question, _)),
+                  )
+                _ -> NoOp
+              }
             }),
-          ],
-        ),
-      ],
-    ),
-  ])
+            attribute.value(field_content |> option.unwrap("")),
+          ]),
+          html.button(
+            [
+              attribute.class(
+                "btn btn-circle btn-primary btn-xs @lg:btn-sm @4xl:btn-md @lg:text-md @4xl:text-lg font-sans",
+              ),
+              attribute.disabled(option.is_none(field_content)),
+              event.on_click(NextQuestion(
+                field_content |> option.map(CustomChoice(current_question, _)),
+              )),
+            ],
+            [
+              html.text(case current_step == total_steps {
+                True -> "✓"
+                False -> "→"
+              }),
+            ],
+          ),
+        ],
+      ),
+    ],
+  )
 }
 
 fn view_loading() -> Element(Msg) {
@@ -620,7 +611,7 @@ fn view_result_hero(
   html.div(
     [
       attribute.class(
-        "@container hero size-full min-h-screen min-w-screen "
+        "@container hero size-screen min-h-screen min-w-screen "
         <> background_gradient,
       ),
     ],
@@ -628,7 +619,7 @@ fn view_result_hero(
       html.div(
         [
           attribute.class(
-            "size-full bg-[url(/src/assets/noise.svg)] mix-blend-screen opacity-30 contrast-150",
+            "size-screen bg-[url(/src/assets/noise.svg)] mix-blend-screen opacity-30 contrast-150",
           ),
         ],
         [],

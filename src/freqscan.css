@@ -87,7 +87,7 @@
 
 
 :root {
-  --duotone-gradient: linear-gradient(to bottom, var(--color-accent) 3.8%, var(--color-secondary) 26.35%, var(--color-accent) 56.23%, var(--color-primary) 104.99%);
+  --duotone-gradient: url(/src/assets/noise.svg), linear-gradient(to bottom, var(--color-accent) 3.8%, var(--color-secondary) 26.35%, var(--color-accent) 56.23%, var(--color-primary) 104.99%);
   --loading-gradient: repeating-linear-gradient(to bottom, var(--color-accent) 0%, var(--color-secondary) 2%, var(--color-accent) 5%, var(--color-neutral) 7%, var(--color-primary) 10%, var(--color-neutral) 13%, var(--color-accent) 16%, var(--color-secondary) 17%, var(--color-accent) 20%, var(--color-accent) 22%, var(--color-secondary) 26%, var(--color-accent) 27%);
 
   --neutral-grey: var(--color-accent);
