@@ -598,7 +598,7 @@ fn view_loading() -> Element(Msg) {
       html.h1(
         [
           attribute.class(
-            "text-5xl text-neutral-content font-light italic font-obviously tracking-[-.08em] animate-pulse",
+            "text-5xl text-neutral-content font-light italic font-obviously tracking-[-.08em]",
           ),
         ],
         [html.text("calcul de ta fréquence ...")],

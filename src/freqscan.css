@@ -107,8 +107,7 @@
   --font-darker: Darker Grotesque, sans-serif;
 
   /* Animations */
-  --animate-scroll-down: scroll-down 60s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite ;
-  --loading-alt-gradient: ;
+  --animate-scroll-down: scroll-down 60s ease-in infinite ;
   @keyframes scroll-down {
     0% { background-position: 0px 800%; background-size: 100% 100%; }
     25% { background-position: 0px 220%; background-size: 100% 80%; }
@@ -121,5 +120,5 @@
     50% { background-color: rgba(0, 0, 0, 0.8); }
   }
 
-  --animate-scroll-pulse: scroll-down 40s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite, pulse-darken 5s ease-in-out infinite;
+  --animate-scroll-pulse: scroll-down 60s ease-in infinite, pulse-darken 5s ease-in-out infinite;
 }
