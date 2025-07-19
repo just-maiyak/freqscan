@@ -267,33 +267,35 @@ fn view(model: Model) -> Element(Msg) {
 }
 
 fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
-  html.div(
-    [
-      attribute.class(
-        "@container hero flex flex-col size-full min-h-screen bg-(image:--duotone-gradient)",
-      ),
-    ],
-    [
-      html.div(
-        [
-          attribute.class(
-            "size-full bg-[url(/src/assets/noise.svg)] mix-blend-screen opacity-30 contrast-150",
-          ),
-        ],
-        [],
-      ),
-      view_header(),
-      html.div(
-        [
-          attribute.class(
-            "hero-content grow flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
-          ),
-        ],
-        content,
-      ),
-      view_footer(),
-    ],
-  )
+  html.div([], [
+    html.div(
+      [
+        attribute.class(
+          "fixed size-full min-h-screen bg-[url(/src/assets/noise.svg)] mix-blend-screen opacity-30 contrast-150",
+        ),
+      ],
+      [],
+    ),
+    html.div(
+      [
+        attribute.class(
+          "@container hero flex flex-col size-full min-h-screen bg-(image:--duotone-gradient)",
+        ),
+      ],
+      [
+        view_header(),
+        html.div(
+          [
+            attribute.class(
+              "hero-content grow flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
+            ),
+          ],
+          content,
+        ),
+        view_footer(),
+      ],
+    ),
+  ])
 }
 
 fn view_home() -> Element(Msg) {
