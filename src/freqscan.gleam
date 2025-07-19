@@ -277,7 +277,7 @@ fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
       html.div(
         [
           attribute.class(
-            "size-full bg-[url(/src/assets/noise.svg)] mix-blend-soft-light opacity-50 contrast-150",
+            "size-full bg-[url(/src/assets/noise.svg)] mix-blend-screen opacity-30 contrast-150",
           ),
         ],
         [],
@@ -586,7 +586,7 @@ fn view_loading() -> Element(Msg) {
             attribute.class("size-full"),
             attribute.style("background", "url(./src/assets/noise.svg)"),
             attribute.style("mix-blend-mode", "screen"),
-            attribute.style("opacity", ".2"),
+            attribute.style("opacity", ".3"),
             attribute.style("filter", "contrast(1.5)"),
           ],
           [],
@@ -626,7 +626,7 @@ fn view_result_hero(
       html.div(
         [
           attribute.class(
-            "size-full bg-[url(./src/assets/noise.svg)] mix-blend-soft-light opacity-50 contrast-150",
+            "size-full bg-[url(/src/assets/noise.svg)] mix-blend-screen opacity-30 contrast-150",
           ),
         ],
         [],
