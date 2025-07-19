@@ -4,11 +4,6 @@
 	  <feTurbulence type="turbulence" baseFrequency="0.55" numOctaves="4" seed="15" stitchTiles="stitch" x="0%" y="0%" width="100%" height="100%" result="turbulence"></feTurbulence>
 	  <feSpecularLighting surfaceScale="7" specularConstant="1.4" specularExponent="20" lighting-color="#ffffff" x="0%" y="0%" width="100%" height="100%" in="turbulence" result="specularLighting">
         <feDistantLight azimuth="3" elevation="100">
-          <animate
-            attributeName="elevation"
-            values="100;50;100"
-            dur="10s"
-            repeatCount="indefinite" />
         </feDistantLight>
   	  </feSpecularLighting>
     </filter>
