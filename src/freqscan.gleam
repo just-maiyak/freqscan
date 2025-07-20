@@ -270,7 +270,11 @@ fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
   html.div(
     [
       attribute.class(
-        "@container hero flex flex-col size-screen min-w-xs min-h-screen bg-(image:--duotone-gradient)",
+        "@container hero "
+        <> "flex flex-col "
+        <> "w-dvw min-w-xs "
+        <> "h-dvh min-h-svh "
+        <> "bg-(image:--duotone-gradient)",
       ),
     ],
     [
@@ -278,7 +282,7 @@ fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
       html.div(
         [
           attribute.class(
-            "hero-content w-screen grow flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
+            "hero-content grow flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
           ),
         ],
         content,
@@ -561,11 +565,11 @@ fn view_field_nav(
 }
 
 fn view_loading() -> Element(Msg) {
-  html.div([attribute.class("hero min-h-screen")], [
+  html.div([attribute.class("hero min-h-svh")], [
     html.div(
       [
         attribute.class(
-          "size-full animate-scroll-down bg-(image:--loading-gradient)",
+          "w-svw h-svh min-w-svw min-h-svh animate-scroll-down bg-(image:--loading-gradient)",
         ),
         attribute.style(
           "animation-delay",
@@ -576,7 +580,7 @@ fn view_loading() -> Element(Msg) {
       [
         html.div(
           [
-            attribute.class("size-full"),
+            attribute.class("h-svh min-h-svh w-full"),
             attribute.style("background", "url(./src/assets/noise.svg)"),
             attribute.style("mix-blend-mode", "screen"),
             attribute.style("opacity", ".3"),
@@ -611,7 +615,7 @@ fn view_result_hero(
   html.div(
     [
       attribute.class(
-        "@container hero size-screen min-h-screen min-w-screen "
+        "@container hero w-dvw h-dvh min-w-svw min-h-svh "
         <> background_gradient,
       ),
     ],
