@@ -266,96 +266,125 @@ fn view(model: Model) -> Element(Msg) {
   }
 }
 
-fn view_hero(content: List(Element(Msg))) -> Element(Msg) {
+fn view_hero(
+  header: Element(Msg),
+  content: List(Element(Msg)),
+  footer: Element(Msg),
+  background: String,
+) -> Element(Msg) {
   html.div(
     [
       attribute.class(
-        "@container hero "
-        <> "flex flex-col "
+        "flex flex-col "
         <> "w-dvw min-w-xs "
         <> "h-dvh min-h-svh "
-        <> "bg-(image:--duotone-gradient)",
+        <> background,
       ),
     ],
     [
-      view_header(),
-      html.div(
-        [
-          attribute.class(
-            "hero-content grow flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content text-center",
-          ),
-        ],
-        content,
-      ),
-      view_footer(),
+      header,
+      html.div([attribute.class("@container hero grow")], [
+        html.div(
+          [
+            attribute.class(
+              "hero-content flex-col w-screen gap-2 py-0 @4xl:gap-7 text-neutral-content text-center",
+            ),
+          ],
+          content,
+        ),
+      ]),
+      footer,
     ],
   )
 }
 
 fn view_home() -> Element(Msg) {
-  view_hero([
-    html.h1(
-      [
-        attribute.class(
-          "mb-2 p-4 pt-1 text-3xl "
-          <> "@lg:mb-4 @lg:p-8 @lg:pt-3 @lg:text-5xl "
-          <> "@4xl:mb-5 @4xl:p-12 @4xl:pt-5 @4xl:text-7xl "
-          <> "size-fit text-neutral font-normal italic font-obviously tracking-[-.12em]",
-        ),
-        attribute.style("background", "white"),
-      ],
-      [html.text("scanne ta fréquence")],
-    ),
-    html.p(
-      [
-        attribute.class(
-          "w-2xs px-3 text-sm "
-          <> "@lg:w-md @lg:px-5 @lg:text-lg "
-          <> "@4xl:w-xl @lg:px-6 @4xl:text-xl "
-          <> "font-normal text-base-content font-darker",
-        ),
-      ],
-      [
-        html.strong([], [
-          html.text("Réponds au test pour savoir quelle onde vibre en toi. "),
-        ]),
-        html.text(
-          "À la fin, on t'attribue une station ...et la vibe qui va avec.",
-        ),
-      ],
-    ),
-    html.button(
-      [
-        attribute.class(
-          "btn btn-sm btn-primary rounded-none w-fit m-4 pb-1 "
-          <> "@lg:btn-md @4xl:btn-xl "
-          <> "font-darker "
-          <> "text-xl @lg:text-2xl @4xl:text-3xl",
-        ),
-        event.on_click(StartQuizz),
-      ],
-      [html.text("Démarrer le test")],
-    ),
-  ])
+  view_hero(
+    view_header(hide: True),
+    [
+      html.h1(
+        [
+          attribute.class(
+            "mb-2 p-4 pt-1 text-3xl "
+            <> "@lg:mb-4 @lg:p-8 @lg:pt-3 @lg:text-5xl "
+            <> "@4xl:mb-5 @4xl:p-12 @4xl:pt-5 @4xl:text-7xl "
+            <> "size-fit text-neutral font-normal italic font-obviously tracking-[-.12em]",
+          ),
+          attribute.style("background", "white"),
+        ],
+        [html.text("scanne ta fréquence")],
+      ),
+      html.p(
+        [
+          attribute.class(
+            "w-2xs px-3 text-sm "
+            <> "@lg:w-md @lg:px-5 @lg:text-lg "
+            <> "@4xl:w-xl @lg:px-6 @4xl:text-xl "
+            <> "font-normal text-base-content font-darker",
+          ),
+        ],
+        [
+          html.strong([], [
+            html.text("Réponds au test pour savoir quelle onde vibre en toi. "),
+          ]),
+          html.text(
+            "À la fin, on t'attribue une station ...et la vibe qui va avec.",
+          ),
+        ],
+      ),
+      html.button(
+        [
+          attribute.class(
+            "btn btn-sm btn-primary rounded-none w-fit m-4 pb-1 "
+            <> "@lg:btn-md @4xl:btn-xl "
+            <> "font-darker "
+            <> "text-xl @lg:text-2xl @4xl:text-3xl",
+          ),
+          event.on_click(StartQuizz),
+        ],
+        [html.text("Démarrer le test")],
+      ),
+    ],
+    view_footer(hide: True),
+    "bg-(image:--duotone-gradient)",
+  )
 }
 
-fn view_header() -> Element(Msg) {
+fn view_header(hide hidden: Bool) -> Element(Msg) {
   html.header(
     [
       attribute.class(
-        "flex flex-row h-24 w-screen bg-repeat-x place-self-start bg-[url(/src/assets/dashed-line-top.svg)]",
+        "flex flex-row place-self-start "
+        <> case hidden {
+          True -> "mobileLandscape:hidden "
+          False -> ""
+        }
+        <> "h-24 w-screen "
+        <> "bg-repeat-x bg-[url(/src/assets/dashed-line-top.svg)]",
       ),
     ],
     [],
   )
 }
 
-fn view_result_header() -> Element(Msg) {
+fn view_result_header(hide hidden: Bool) -> Element(Msg) {
   html.header(
-    [attribute.class("flex flex-col w-screen place-self-start bg-black")],
+    [
+      attribute.class(
+        "flex flex-col w-screen place-self-start bg-(image:--noise)",
+      ),
+    ],
     [
       html.div(
-        [attribute.class("h-24 w-screen bg-(image:--header-result-gradient)")],
+        [
+          attribute.class(
+            "h-24 w-screen bg-(image:--header-result-gradient) "
+            <> case hidden {
+              True -> "mobileLandscape:hidden"
+              False -> ""
+            },
+          ),
+        ],
         [],
       ),
       html.div([attribute.class("grow flex flex-row-reverse w-screen")], [
@@ -367,7 +396,9 @@ fn view_result_header() -> Element(Msg) {
             ),
           ],
           [
-            html.span([attribute.class("italic")], [html.text("station")]),
+            html.span([attribute.class("mr-1 italic tracking-[-.12em]")], [
+              html.text("station"),
+            ]),
             html.span([attribute.class("font-bold")], [html.text("R")]),
           ],
         ),
@@ -376,19 +407,28 @@ fn view_result_header() -> Element(Msg) {
   )
 }
 
-fn view_footer() -> Element(Msg) {
-  html.footer([attribute.class("footer place-self-end gap-0")], [
-    html.img([
-      attribute.class("h-1/2 place-self-end @lg:portrait:h-2/3 @4xl:h-auto"),
-      attribute.src("./src/assets/logos.svg"),
-    ]),
-    html.img([
+fn view_footer(hide hidden: Bool) -> Element(Msg) {
+  html.div(
+    [
       attribute.class(
-        "h-4 @lg:h-6 @4xl:h-8 w-full place-self-center object-cover",
+        "flex flex-col gap-0 place-content-end "
+        <> case hidden {
+          True -> "mobileLandscape:hidden"
+          False -> ""
+        },
       ),
-      attribute.src("./src/assets/dashed-line-bottom.svg"),
-    ]),
-  ])
+    ],
+    [
+      html.img([
+        attribute.class("h-20 lg:h-36 place-self-end"),
+        attribute.src("./src/assets/logos.svg"),
+      ]),
+      html.img([
+        attribute.class("h-4 lg:h-6 4xl:h-8 w-full object-cover"),
+        attribute.src("./src/assets/dashed-line-bottom.svg"),
+      ]),
+    ],
+  )
 }
 
 fn view_prompt(
@@ -397,27 +437,32 @@ fn view_prompt(
   question_number: Int,
   field_content: Option(String),
 ) -> Element(Msg) {
-  view_hero([
-    view_step_indicator(total_questions, question_number),
-    html.h1(
-      [
-        attribute.class(
-          "p-2 text-2xl "
-          <> "@lg:text-3xl "
-          <> "@4xl:text-5xl "
-          <> "text-neutral font-normal italic font-obviously tracking-[-.08em]",
-        ),
-      ],
-      [html.text(question.question)],
-    ),
-    view_field_nav(
-      total_questions,
-      question_number,
-      question.question,
-      field_content,
-    ),
-    question.choices |> view_choices,
-  ])
+  view_hero(
+    view_header(hide: True),
+    [
+      view_step_indicator(total_questions, question_number),
+      html.h1(
+        [
+          attribute.class(
+            "p-2 text-2xl "
+            <> "@lg:text-3xl "
+            <> "@4xl:text-5xl "
+            <> "text-neutral font-normal italic font-obviously tracking-[-.08em]",
+          ),
+        ],
+        [html.text(question.question)],
+      ),
+      view_field_nav(
+        total_questions,
+        question_number,
+        question.question,
+        field_content,
+      ),
+      question.choices |> view_choices,
+    ],
+    view_footer(hide: True),
+    "bg-(image:--duotone-gradient)",
+  )
 }
 
 fn view_step_indicator(total_steps: Int, current_step: Int) -> Element(Msg) {
@@ -453,8 +498,7 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
   html.div(
     [
       attribute.class(
-        "flex flex-col place-items-center gap-2 w-screen my-6 @lg:landscape:my-1 "
-        <> "@lg:w-3xl @4xl:w-4xl",
+        "flex flex-col place-items-center gap-2 my-6 @lg:landscape:my-1",
       ),
     ],
     [
@@ -504,7 +548,7 @@ fn view_field_nav(
   field_content: Option(String),
 ) -> Element(Msg) {
   html.div(
-    [attribute.class("flex flex-row w-full place-items-center gap-2 px-2")],
+    [attribute.class("flex flex-row w-full place-items-center gap-2 px-4")],
     [
       html.button(
         [
@@ -580,11 +624,10 @@ fn view_loading() -> Element(Msg) {
       [
         html.div(
           [
-            attribute.class("h-svh min-h-svh w-full"),
-            attribute.style("background", "url(./src/assets/noise.svg)"),
-            attribute.style("mix-blend-mode", "screen"),
-            attribute.style("opacity", ".3"),
-            attribute.style("filter", "contrast(1.5)"),
+            attribute.class(
+              "h-svh min-h-svh w-full "
+              <> "bg-(image:--noise) mix-blend-screen opacity-30 contrast-150",
+            ),
           ],
           [],
         ),
@@ -604,52 +647,22 @@ fn view_loading() -> Element(Msg) {
   ])
 }
 
-fn view_result_hero(
-  frequency: Station,
-  content: List(Element(Msg)),
-) -> Element(Msg) {
-  let background_gradient = case frequency {
-    Slower | Slow -> "bg-(image:--house-result-gradient)"
-    Faster | Fast -> "bg-(image:--techno-result-gradient)"
-  }
-  html.div(
-    [
-      attribute.class(
-        "@container hero w-dvw h-dvh min-w-svw min-h-svh "
-        <> background_gradient,
-      ),
-    ],
-    [
-      html.div(
-        [
-          attribute.class(
-            "size-screen bg-[url(/src/assets/noise.svg)] mix-blend-screen opacity-30 contrast-150",
-          ),
-        ],
-        [],
-      ),
-      view_result_header(),
-      html.div(
-        [
-          attribute.class(
-            "hero-content flex-col gap-2 mt-4 @4xl:gap-7 text-neutral-content font-obviously",
-          ),
-        ],
-        content,
-      ),
-      view_footer(),
-    ],
-  )
-}
-
 fn view_result(result: Frequency) -> Element(Msg) {
-  view_result_hero(result.frequency, [
-    html.h1([attribute.class("text-4xl")], [html.text(result.name)]),
-    html.p([], [result.frequency |> station_to_string |> html.text]),
-    html.p([], [result.verbatims |> string.join(", ") |> html.text]),
-    html.p([], [result.tags |> string.join(", ") |> html.text]),
-    html.p([], [result.artists |> string.join(", ") |> html.text]),
-  ])
+  view_hero(
+    view_result_header(hide: True),
+    [
+      html.h1([attribute.class("text-4xl")], [html.text(result.name)]),
+      html.p([], [result.frequency |> station_to_string |> html.text]),
+      html.p([], [result.verbatims |> string.join(", ") |> html.text]),
+      html.p([], [result.tags |> string.join(", ") |> html.text]),
+      html.p([], [result.artists |> string.join(", ") |> html.text]),
+    ],
+    view_footer(hide: False),
+    case result.frequency {
+      Slower | Slow -> "bg-(image:--house-result-gradient)"
+      Faster | Fast -> "bg-(image:--techno-result-gradient)"
+    },
+  )
 }
 
 // DATA    ------------------------------------------------
