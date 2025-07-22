@@ -56,6 +56,17 @@ type Frequency {
   )
 }
 
+fn dummy_result() {
+  Some(Frequency(
+    frequency: Fast,
+    name: "Test Test Radio",
+    verbatims: ["Lorem Ipsum", "Dolor Sit Amet", "Consectetur Adipiscing Elit"],
+    tags: ["Etheré", "Doux", "Calme", "Paisible"],
+    artists: ["Alex Kassian", "Asphalt DJ", "Paramida"],
+    playlist: Playlist(deezer: "", spotify: ""),
+  ))
+}
+
 type Question {
   Question(question: String, choices: List(Choice))
 }
@@ -277,21 +288,14 @@ fn view_hero(
       attribute.class(
         "flex flex-col "
         <> "w-dvw min-w-xs "
-        <> "h-dvh min-h-svh "
+        <> "h-fit min-h-svh "
         <> background,
       ),
     ],
     [
       header,
       html.div([attribute.class("@container hero grow")], [
-        html.div(
-          [
-            attribute.class(
-              "hero-content flex-col w-screen gap-2 py-0 @4xl:gap-7 text-neutral-content text-center",
-            ),
-          ],
-          content,
-        ),
+        html.div([attribute.class("hero-content size-full p-0")], content),
       ]),
       footer,
     ],
@@ -302,47 +306,58 @@ fn view_home() -> Element(Msg) {
   view_hero(
     view_header(hide: True),
     [
-      html.h1(
+      html.div(
         [
           attribute.class(
-            "mb-2 p-4 pt-1 text-3xl "
-            <> "@lg:mb-4 @lg:p-8 @lg:pt-3 @lg:text-5xl "
-            <> "@4xl:mb-5 @4xl:p-12 @4xl:pt-5 @4xl:text-7xl "
-            <> "size-fit text-neutral font-normal italic font-obviously tracking-[-.12em]",
-          ),
-          attribute.style("background", "white"),
-        ],
-        [html.text("scanne ta fréquence")],
-      ),
-      html.p(
-        [
-          attribute.class(
-            "w-2xs px-3 text-sm "
-            <> "@lg:w-md @lg:px-5 @lg:text-lg "
-            <> "@4xl:w-xl @lg:px-6 @4xl:text-xl "
-            <> "font-normal text-base-content font-darker",
+            "flex flex-col place-items-center py-0 gap-2 @4xl:gap-7 text-neutral-content text-center",
           ),
         ],
         [
-          html.strong([], [
-            html.text("Réponds au test pour savoir quelle onde vibre en toi. "),
-          ]),
-          html.text(
-            "À la fin, on t'attribue une station ...et la vibe qui va avec.",
+          html.h1(
+            [
+              attribute.class(
+                "mb-2 p-4 pt-1 text-3xl "
+                <> "@lg:mb-4 @lg:p-8 @lg:pt-3 @lg:text-5xl "
+                <> "@4xl:mb-5 @4xl:p-12 @4xl:pt-5 @4xl:text-7xl "
+                <> "size-fit text-neutral font-normal italic font-obviously tracking-[-.12em]",
+              ),
+              attribute.style("background", "white"),
+            ],
+            [html.text("scanne ta fréquence")],
+          ),
+          html.p(
+            [
+              attribute.class(
+                "w-2xs px-3 text-sm "
+                <> "@lg:w-md @lg:px-5 @lg:text-lg "
+                <> "@4xl:w-xl @lg:px-6 @4xl:text-xl "
+                <> "font-normal text-base-content font-darker",
+              ),
+            ],
+            [
+              html.strong([], [
+                html.text(
+                  "Réponds au test pour savoir quelle onde vibre en toi. ",
+                ),
+              ]),
+              html.text(
+                "À la fin, on t'attribue une station ...et la vibe qui va avec.",
+              ),
+            ],
+          ),
+          html.button(
+            [
+              attribute.class(
+                "btn btn-sm btn-primary rounded-none w-fit m-4 pb-1 "
+                <> "@lg:btn-md @4xl:btn-xl "
+                <> "font-darker "
+                <> "text-xl @lg:text-2xl @4xl:text-3xl",
+              ),
+              event.on_click(StartQuizz),
+            ],
+            [html.text("Démarrer le test")],
           ),
         ],
-      ),
-      html.button(
-        [
-          attribute.class(
-            "btn btn-sm btn-primary rounded-none w-fit m-4 pb-1 "
-            <> "@lg:btn-md @4xl:btn-xl "
-            <> "font-darker "
-            <> "text-xl @lg:text-2xl @4xl:text-3xl",
-          ),
-          event.on_click(StartQuizz),
-        ],
-        [html.text("Démarrer le test")],
       ),
     ],
     view_footer(hide: True),
@@ -369,11 +384,7 @@ fn view_header(hide hidden: Bool) -> Element(Msg) {
 
 fn view_result_header(hide hidden: Bool) -> Element(Msg) {
   html.header(
-    [
-      attribute.class(
-        "flex flex-col w-screen place-self-start bg-(image:--noise)",
-      ),
-    ],
+    [attribute.class("flex flex-col place-self-start bg-(image:--noise)")],
     [
       html.div(
         [
@@ -440,25 +451,34 @@ fn view_prompt(
   view_hero(
     view_header(hide: True),
     [
-      view_step_indicator(total_questions, question_number),
-      html.h1(
+      html.div(
         [
           attribute.class(
-            "p-2 text-2xl "
-            <> "@lg:text-3xl "
-            <> "@4xl:text-5xl "
-            <> "text-neutral font-normal italic font-obviously tracking-[-.08em]",
+            "flex flex-col w-screen py-0 gap-2 @4xl:gap-7 text-neutral-content text-center",
           ),
         ],
-        [html.text(question.question)],
+        [
+          view_step_indicator(total_questions, question_number),
+          html.h1(
+            [
+              attribute.class(
+                "p-2 text-2xl "
+                <> "@lg:text-3xl "
+                <> "@4xl:text-5xl "
+                <> "text-neutral font-normal italic font-obviously tracking-[-.08em]",
+              ),
+            ],
+            [html.text(question.question)],
+          ),
+          view_field_nav(
+            total_questions,
+            question_number,
+            question.question,
+            field_content,
+          ),
+          question.choices |> view_choices,
+        ],
       ),
-      view_field_nav(
-        total_questions,
-        question_number,
-        question.question,
-        field_content,
-      ),
-      question.choices |> view_choices,
     ],
     view_footer(hide: True),
     "bg-(image:--duotone-gradient)",
@@ -648,20 +668,157 @@ fn view_loading() -> Element(Msg) {
 }
 
 fn view_result(result: Frequency) -> Element(Msg) {
+  let background = case result.frequency {
+    Slower | Slow -> "bg-(image:--house-result-gradient)"
+    Faster | Fast -> "bg-(image:--techno-result-gradient)"
+  }
+  let frequency_pane =
+    html.section(
+      [
+        attribute.class(
+          "grow flex flex-col p-4 "
+          <> "shadow-xl/30 grow h-fit landscape:h-full "
+          <> background
+          <> " text-2xl font-darker font-extrabold",
+        ),
+      ],
+      [
+        html.h1(
+          [
+            attribute.class(
+              "pb-1 text-neutral-content text-6xl font-obviously font-normal italic tracking-[-.06em]",
+            ),
+          ],
+          [result.frequency |> station_to_string |> html.text],
+        ),
+        html.p([attribute.class("h-6 text-neutral-content font-normal")], [
+          html.text("Ma fréquence musicale"),
+        ]),
+        html.p([], [html.text("Le 31 juillet à La Rotonde Stalingrad")]),
+        html.h2(
+          [
+            attribute.class(
+              "grow h-[40vh] place-content-center text-neutral-content text-6xl font-obviously font-normal italic tracking-[-.06em]",
+            ),
+          ],
+          [html.text(result.name)],
+        ),
+        html.div(
+          [attribute.class("flex flex-wrap gap-2")],
+          [result.tags, result.verbatims, result.artists]
+            |> list.flatten
+            |> list.map(fn(pill) {
+              html.p(
+                [
+                  attribute.class(
+                    "pb-1 px-3 bg-neutral-content font-bold text-md rounded-3xl",
+                  ),
+                ],
+                [html.text(pill)],
+              )
+            })
+            |> list.shuffle,
+        ),
+      ],
+    )
+  let cta_pane =
+    html.section(
+      [
+        attribute.class(
+          "shrink py-4 px-8 "
+          <> "flex flex-col text-center place-items-center place-content-center gap-4 "
+          <> "text-2xl font-darker font-extrabold",
+        ),
+      ],
+      [
+        html.p([], [
+          html.text(
+            "Ce résultat a été conçu entièrement en fonction de tes choix !",
+          ),
+        ]),
+        html.p([attribute.class("font-semibold")], [
+          html.text(
+            "Nous avons associé tes réponses  à des propositions similaires...",
+          ),
+        ]),
+        html.p([], [
+          html.text(
+            "Viens découvrir l’ambiance qui te correspond  le 31 juillet à la Rotonde avec Éclectique et OD.",
+          ),
+        ]),
+        html.div(
+          [
+            attribute.class(
+              "flex flex-col text-center place-items-center gap-2",
+            ),
+          ],
+          [
+            html.button(
+              [attribute.class("pb-1 btn btn-primary btn-sm text-xl")],
+              [html.text("Prends ta place")],
+            ),
+            html.button([attribute.class("pb-1 btn btn-sm text-xl")], [
+              html.text("Partage ta fréquence"),
+            ]),
+            html.p([], [html.text("Écoute la playlist associée :")]),
+            html.div([attribute.class("flex gap-2")], [
+              html.button(
+                [
+                  attribute.class(
+                    "place-items-center btn btn-ghost btn-circle btn-sm fa-brands text-xl",
+                  ),
+                ],
+                [
+                  html.img([
+                    attribute.class("h-6 py-1 transition-all hover:invert"),
+                    attribute.src("/src/assets/logos/deezer.svg"),
+                  ]),
+                ],
+              ),
+              html.button(
+                [
+                  attribute.class(
+                    "btn btn-ghost btn-circle btn-sm fa-brands fa-spotify text-xl",
+                  ),
+                ],
+                [],
+              ),
+              html.button(
+                [
+                  attribute.class(
+                    "btn btn-ghost btn-circle btn-sm fa-brands fa-apple text-xl",
+                  ),
+                ],
+                [],
+              ),
+              html.button(
+                [
+                  attribute.class(
+                    "btn btn-ghost btn-circle btn-sm fa-brands fa-youtube text-xl",
+                  ),
+                ],
+                [],
+              ),
+            ]),
+          ],
+        ),
+      ],
+    )
   view_hero(
     view_result_header(hide: True),
     [
-      html.h1([attribute.class("text-4xl")], [html.text(result.name)]),
-      html.p([], [result.frequency |> station_to_string |> html.text]),
-      html.p([], [result.verbatims |> string.join(", ") |> html.text]),
-      html.p([], [result.tags |> string.join(", ") |> html.text]),
-      html.p([], [result.artists |> string.join(", ") |> html.text]),
+      html.div(
+        [
+          attribute.class(
+            "w-screen flex flex-col landscape:flex-row h-full gap-0 "
+            <> "text-neutral",
+          ),
+        ],
+        [frequency_pane, cta_pane],
+      ),
     ],
     view_footer(hide: False),
-    case result.frequency {
-      Slower | Slow -> "bg-(image:--house-result-gradient)"
-      Faster | Fast -> "bg-(image:--techno-result-gradient)"
-    },
+    "bg-accent",
   )
 }
 
