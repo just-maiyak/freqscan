@@ -57,14 +57,14 @@ type Frequency {
 }
 
 fn dummy_result() {
-  Some(Frequency(
+  Frequency(
     frequency: Fast,
     name: "Test Test Radio",
     verbatims: ["Lorem Ipsum", "Dolor Sit Amet", "Consectetur Adipiscing Elit"],
     tags: ["Etheré", "Doux", "Calme", "Paisible"],
     artists: ["Alex Kassian", "Asphalt DJ", "Paramida"],
     playlist: Playlist(deezer: "", spotify: ""),
-  ))
+  )
 }
 
 type Question {
@@ -304,7 +304,7 @@ fn view_hero(
 
 fn view_home() -> Element(Msg) {
   view_hero(
-    view_header(hide: True),
+    view_header(),
     [
       html.div(
         [
@@ -360,20 +360,16 @@ fn view_home() -> Element(Msg) {
         ],
       ),
     ],
-    view_footer(hide: True),
+    view_footer(),
     "bg-(image:--duotone-gradient)",
   )
 }
 
-fn view_header(hide hidden: Bool) -> Element(Msg) {
+fn view_header() -> Element(Msg) {
   html.header(
     [
       attribute.class(
-        "flex flex-row place-self-start "
-        <> case hidden {
-          True -> "mobileLandscape:hidden "
-          False -> ""
-        }
+        "flex flex-row place-self-start mobileLandscape:hidden "
         <> "h-24 w-screen "
         <> "bg-repeat-x bg-[url(/src/assets/dashed-line-top.svg)]",
       ),
@@ -382,18 +378,14 @@ fn view_header(hide hidden: Bool) -> Element(Msg) {
   )
 }
 
-fn view_result_header(hide hidden: Bool) -> Element(Msg) {
+fn view_result_header() -> Element(Msg) {
   html.header(
     [attribute.class("flex flex-col place-self-start bg-(image:--noise)")],
     [
       html.div(
         [
           attribute.class(
-            "h-24 w-screen bg-(image:--header-result-gradient) "
-            <> case hidden {
-              True -> "mobileLandscape:hidden"
-              False -> ""
-            },
+            "h-24 w-screen bg-(image:--header-result-gradient) mobileLandscape:hidden"
           ),
         ],
         [],
@@ -418,25 +410,21 @@ fn view_result_header(hide hidden: Bool) -> Element(Msg) {
   )
 }
 
-fn view_footer(hide hidden: Bool) -> Element(Msg) {
-  html.div(
+fn view_footer() -> Element(Msg) {
+  html.footer(
     [
       attribute.class(
-        "flex flex-col gap-0 place-content-end "
-        <> case hidden {
-          True -> "mobileLandscape:hidden"
-          False -> ""
-        },
+        "relative flex flex-col-reverse gap-0 place-content-end mobileLandscape:hidden"
       ),
     ],
     [
       html.img([
-        attribute.class("h-20 lg:h-36 place-self-end"),
-        attribute.src("./src/assets/logos.svg"),
+        attribute.class("z-1 h-4 lg:h-6 4xl:h-8 w-full object-cover"),
+        attribute.src("./src/assets/dashed-line-bottom.svg"),
       ]),
       html.img([
-        attribute.class("h-4 lg:h-6 4xl:h-8 w-full object-cover"),
-        attribute.src("./src/assets/dashed-line-bottom.svg"),
+        attribute.class("landscape:absolute landscape:bottom-6 h-18 lg:h-24 place-self-end"),
+        attribute.src("./src/assets/logos.svg"),
       ]),
     ],
   )
@@ -449,7 +437,7 @@ fn view_prompt(
   field_content: Option(String),
 ) -> Element(Msg) {
   view_hero(
-    view_header(hide: True),
+    view_header(),
     [
       html.div(
         [
@@ -480,7 +468,7 @@ fn view_prompt(
         ],
       ),
     ],
-    view_footer(hide: True),
+    view_footer(),
     "bg-(image:--duotone-gradient)",
   )
 }
@@ -672,51 +660,67 @@ fn view_result(result: Frequency) -> Element(Msg) {
     Slower | Slow -> "bg-(image:--house-result-gradient)"
     Faster | Fast -> "bg-(image:--techno-result-gradient)"
   }
+  let genre = case result.frequency {
+    Slower | Slow -> "House"
+    Faster | Fast -> "Techno"
+  }
+  let location = case result.frequency {
+    Slower | Slow -> "à l'Atrium"
+    Faster | Fast -> "au Refuge"
+  }
   let frequency_pane =
     html.section(
       [
         attribute.class(
-          "grow flex flex-col p-4 "
-          <> "shadow-xl/30 grow h-fit landscape:h-full "
+          "flex flex-col p-4 landscape:lg:p-24 landscape:lg:pt-8 place-self-stretch "
+          <> "shadow-lg/30 "
           <> background
-          <> " text-2xl font-darker font-extrabold",
+          <> " text-2xl mobileLandscape:text-lg font-darker font-extrabold",
         ),
       ],
       [
         html.h1(
           [
             attribute.class(
-              "pb-1 text-neutral-content text-6xl font-obviously font-normal italic tracking-[-.06em]",
+              "pb-1 text-neutral-content text-6xl mobileLandscape:text-4xl font-obviously font-normal italic tracking-[-.06em]",
             ),
           ],
           [result.frequency |> station_to_string |> html.text],
         ),
         html.p([attribute.class("h-6 text-neutral-content font-normal")], [
-          html.text("Ma fréquence musicale"),
+          html.text("Ma fréquence musicale : " <> genre),
         ]),
-        html.p([], [html.text("Le 31 juillet à La Rotonde Stalingrad")]),
+        html.p([], [
+          html.text("Le 31 juillet " <> location <> " de la Rotonde Stalingrad"),
+        ]),
         html.h2(
           [
             attribute.class(
-              "grow h-[40vh] place-content-center text-neutral-content text-6xl font-obviously font-normal italic tracking-[-.06em]",
+              "grow h-[40vh] mobileLandscape:min-h-[20vh] place-content-center "
+                    <>"text-neutral-content text-6xl mobileLandscape:text-4xl "
+                    <>"font-obviously font-normal italic tracking-[-.06em]",
             ),
           ],
           [html.text(result.name)],
         ),
         html.div(
           [attribute.class("flex flex-wrap gap-2")],
-          [result.tags, result.verbatims, result.artists]
+          {
+            use pills, color <- list.map2(
+              [result.tags, result.verbatims, result.artists],
+              ["bg-neutral-content", "bg-accent", "bg-primary"],
+            )
+            use pill <- list.map(pills)
+            html.p(
+              [
+                attribute.class(
+                  "pb-1 px-3 " <> color <> " shadow-lg font-bold text-md mobileLandscape:text-sm rounded-3xl",
+                ),
+              ],
+              [html.text(pill)],
+            )
+          }
             |> list.flatten
-            |> list.map(fn(pill) {
-              html.p(
-                [
-                  attribute.class(
-                    "pb-1 px-3 bg-neutral-content font-bold text-md rounded-3xl",
-                  ),
-                ],
-                [html.text(pill)],
-              )
-            })
             |> list.shuffle,
         ),
       ],
@@ -725,9 +729,9 @@ fn view_result(result: Frequency) -> Element(Msg) {
     html.section(
       [
         attribute.class(
-          "shrink py-4 px-8 "
+          "shrink py-4 mobileLandscape:py-2 px-8 "
           <> "flex flex-col text-center place-items-center place-content-center gap-4 "
-          <> "text-2xl font-darker font-extrabold",
+          <> "text-2xl mobileLandscape:text-lg/6 font-darker font-extrabold",
         ),
       ],
       [
@@ -737,8 +741,8 @@ fn view_result(result: Frequency) -> Element(Msg) {
           ),
         ]),
         html.p([attribute.class("font-semibold")], [
-          html.text(
-            "Nous avons associé tes réponses  à des propositions similaires...",
+          html.text( 
+            "Nous avons associé tes réponses à des propositions similaires...",
           ),
         ]),
         html.p([], [
@@ -754,10 +758,10 @@ fn view_result(result: Frequency) -> Element(Msg) {
           ],
           [
             html.button(
-              [attribute.class("pb-1 btn btn-primary btn-sm text-xl")],
+              [attribute.class("pb-1 btn btn-primary btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg")],
               [html.text("Prends ta place")],
             ),
-            html.button([attribute.class("pb-1 btn btn-sm text-xl")], [
+            html.button([attribute.class("pb-1 btn btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg")], [
               html.text("Partage ta fréquence"),
             ]),
             html.p([], [html.text("Écoute la playlist associée :")]),
@@ -804,21 +808,24 @@ fn view_result(result: Frequency) -> Element(Msg) {
         ),
       ],
     )
-  view_hero(
-    view_result_header(hide: True),
+  html.div([
+        attribute.class(
+        "flex flex-col "
+        <> "w-dvw min-w-xs "
+        <> "h-full min-h-svh")
+    ],
     [
+    view_result_header(),
       html.div(
         [
           attribute.class(
-            "w-screen flex flex-col landscape:flex-row h-full gap-0 "
-            <> "text-neutral",
+            "grow flex flex-col landscape:flex-row gap-0 text-neutral",
           ),
         ],
         [frequency_pane, cta_pane],
       ),
+    view_footer(),
     ],
-    view_footer(hide: False),
-    "bg-accent",
   )
 }
 
