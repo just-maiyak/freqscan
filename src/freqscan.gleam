@@ -380,7 +380,7 @@ fn view_header() -> Element(Msg) {
 
 fn view_result_header() -> Element(Msg) {
   html.header(
-    [attribute.class("flex flex-col place-self-start bg-(image:--noise)")],
+    [attribute.class("flex flex-col place-self-start bg-black")],
     [
       html.div(
         [
@@ -634,7 +634,7 @@ fn view_loading() -> Element(Msg) {
           [
             attribute.class(
               "h-svh min-h-svh w-full "
-              <> "bg-(image:--noise) mix-blend-screen opacity-30 contrast-150",
+              <> "bg-(image:--noise) mix-blend-screen opacity-70",
             ),
           ],
           [],
@@ -731,7 +731,8 @@ fn view_result(result: Frequency) -> Element(Msg) {
         attribute.class(
           "shrink py-4 mobileLandscape:py-2 px-8 "
           <> "flex flex-col text-center place-items-center place-content-center gap-4 "
-          <> "text-2xl mobileLandscape:text-lg/6 font-darker font-extrabold",
+          <> "text-2xl mobileLandscape:text-lg/6 font-darker font-extrabold "
+            <>"bg-(image:--noise)",
         ),
       ],
       [
