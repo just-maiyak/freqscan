@@ -289,6 +289,7 @@ fn view_hero(
         "flex flex-col "
         <> "w-dvw min-w-xs "
         <> "h-fit min-h-svh "
+        <> "bg-cover bg-left "
         <> background,
       ),
     ],
@@ -309,7 +310,7 @@ fn view_home() -> Element(Msg) {
       html.div(
         [
           attribute.class(
-            "flex flex-col place-items-center py-0 gap-2 @4xl:gap-7 text-neutral-content text-center",
+            "flex flex-col place-items-center py-0 gap-2 @4xl:gap-3 text-neutral-content text-center",
           ),
         ],
         [
@@ -330,7 +331,8 @@ fn view_home() -> Element(Msg) {
               attribute.class(
                 "w-2xs px-3 text-sm "
                 <> "@lg:w-md @lg:px-5 @lg:text-lg "
-                <> "@4xl:w-xl @lg:px-6 @4xl:text-xl "
+                <> "@4xl:w-xl @lg:px-6 @4xl:text-2xl "
+                <> "text-shadow-md/30 text-shadow-white "
                 <> "font-normal text-base-content font-darker",
               ),
             ],
@@ -348,20 +350,20 @@ fn view_home() -> Element(Msg) {
           html.button(
             [
               attribute.class(
-                "btn btn-sm btn-primary rounded-none w-fit m-4 pb-1 "
-                <> "@lg:btn-md @4xl:btn-xl "
+                "btn btn-sm size-fit m-4 pb-1 "
+                <> "@lg:btn-md @4xl:btn-lg "
                 <> "font-darker "
                 <> "text-xl @lg:text-2xl @4xl:text-3xl",
               ),
               event.on_click(StartQuizz),
             ],
-            [html.text("Démarrer le test")],
+            [html.text("Démarrer l'expérience")],
           ),
         ],
       ),
     ],
     view_footer(),
-    "bg-(image:--duotone-gradient)",
+    "bg-(image:--home-background)",
   )
 }
 
