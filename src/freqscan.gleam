@@ -5,6 +5,7 @@ import gleam/int
 import gleam/json
 import gleam/list
 import gleam/option.{type Option, None, Some}
+import gleam/regexp
 import lustre
 import lustre/attribute
 import lustre/effect.{type Effect}
@@ -576,6 +577,19 @@ fn view_field_nav(
   current_question: Question,
   field_content: Option(String),
 ) -> Element(Msg) {
+  let input_min_length = 3
+  let input_max_length = 50
+  let field_validation_string =
+    "(?=[\\p{L}\\p{M}\\p{P}\\s\\d]*).{"
+    <> int.to_string(input_min_length)
+    <> ","
+    <> int.to_string(input_max_length)
+    <> "}"
+  let assert Ok(field_validation_regex) =
+    regexp.from_string(field_validation_string)
+  let field_disabled =
+    option.is_none(field_content)
+    || !regexp.check(field_validation_regex, option.unwrap(field_content, ""))
   html.div(
     [attribute.class("flex flex-row w-full place-items-center gap-2 px-4")],
     [
@@ -590,7 +604,7 @@ fn view_field_nav(
       html.label(
         [
           attribute.class(
-            "grow input input-md rounded-full @lg:input-lg @4xl:input-xl "
+            "grow input validator input-md rounded-full @lg:input-lg @4xl:input-xl "
             <> "font-darker "
             <> "text-xl @lg:text-2xl @4xl:text-3xl "
             <> "text-base-content font-medium",
@@ -600,16 +614,19 @@ fn view_field_nav(
           html.input([
             attribute.class("pb-1 pl-3"),
             attribute.type_("text"),
+            attribute.pattern(field_validation_string),
             attribute.placeholder("Écris ta réponse"),
+            attribute.attribute("minlength", int.to_string(input_min_length)),
+            attribute.attribute("maxlength", int.to_string(input_max_length)),
             event.on_input(ChangeField),
             event.on_keypress(fn(key) {
-              case key {
-                "Enter" ->
+              case key, field_disabled {
+                "Enter", False ->
                   NextQuestion(
                     field_content
                     |> option.map(CustomChoice(current_question, _)),
                   )
-                _ -> NoOp
+                _, _ -> NoOp
               }
             }),
             attribute.value(field_content |> option.unwrap("")),
@@ -619,7 +636,7 @@ fn view_field_nav(
               attribute.class(
                 "btn btn-circle btn-primary btn-xs @lg:btn-sm @4xl:btn-md @lg:text-md @4xl:text-lg font-sans",
               ),
-              attribute.disabled(option.is_none(field_content)),
+              attribute.disabled(field_disabled),
               event.on_click(NextQuestion(
                 field_content |> option.map(CustomChoice(current_question, _)),
               )),
