@@ -13,7 +13,6 @@ import lustre/effect.{type Effect}
 import lustre/element.{type Element}
 import lustre/element/html
 import lustre/event
-
 import rsvp
 
 // MAIN    ------------------------------------------------
@@ -30,8 +29,8 @@ pub fn main() {
 type Model {
   Model(
     answers: Answers,
-    next_questions: List(Question),
-    previous_questions: List(Question),
+    next_questions: List(#(Question, Answers)),
+    previous_questions: List(#(Question, Answers)),
     current_page: Page,
     field_content: Option(String),
     result: Option(Frequency),
@@ -42,7 +41,7 @@ type Answers =
   List(Choice)
 
 type Playlist {
-  Playlist(deezer: String, spotify: String)
+  Playlist(deezer: String, spotify: String, apple: String, youtube: String)
 }
 
 type Frequency {
@@ -63,17 +62,21 @@ fn dummy_result() {
     verbatims: ["Lorem Ipsum", "Dolor Sit Amet", "Consectetur Adipiscing Elit"],
     tags: ["Etheré", "Doux", "Calme", "Paisible"],
     artists: ["Alex Kassian", "Asphalt DJ", "Paramida"],
-    playlist: Playlist(deezer: "", spotify: ""),
+    playlist: Playlist(deezer: "", spotify: "", apple: "", youtube: ""),
   )
 }
 
+type Questionnaire {
+  Questionnaire(questions: List(#(Question, Answers)))
+}
+
 type Question {
-  Question(question: String, choices: List(Choice))
+  Question(question_id: String, question: String)
 }
 
 type Choice {
   PromptChoice(answer: String, station: Station)
-  CustomChoice(question: String, answer: String)
+  CustomChoice(question: Question, answer: String)
 }
 
 type Station {
@@ -85,16 +88,17 @@ type Station {
 
 type Page {
   Home
-  Prompt(question: Question)
+  Prompt(question: Question, choices: Answers)
   LoadingResult
   Result
 }
 
 fn init(_) -> #(Model, Effect(Msg)) {
+  let questionnaire: Questionnaire = Questionnaire(questions:)
   let model: Model =
     Model(
       answers: [],
-      next_questions: list.shuffle(questions),
+      next_questions: list.shuffle(questionnaire.questions),
       previous_questions: [],
       current_page: Home,
       field_content: None,
@@ -108,7 +112,7 @@ fn choice_to_json(choice: Choice) -> json.Json {
   case choice {
     CustomChoice(question:, answer:) ->
       json.object([
-        #("question", json.string(question)),
+        #("question_id", json.string(question.question_id)),
         #("answer", json.string(answer)),
       ])
     _ -> json.int(1)
@@ -117,9 +121,10 @@ fn choice_to_json(choice: Choice) -> json.Json {
 
 fn fetch_frequency(
   answers: List(Choice),
+  language: String,
   on_response handle_response: fn(Result(Frequency, rsvp.Error)) -> Msg,
 ) -> Effect(Msg) {
-  let url = "https://freqgen.yefimch.uk/predict"
+  let url = "http://localhost:8000/predict?language=" <> language
   let decoder = frequency_decoder()
   let handler = rsvp.expect_json(decoder, handle_response)
   let body =
@@ -131,19 +136,21 @@ fn fetch_frequency(
 fn station_decoder() -> Decoder(Station) {
   use freq_string <- decode.then(decode.string)
   case freq_string {
-    "slower" -> decode.success(Faster)
-    "slow" -> decode.success(Fast)
-    "fast" -> decode.success(Slow)
-    "faster" -> decode.success(Slower)
-    _ -> decode.failure(Fast, "")
+    "slower" -> decode.success(Slower)
+    "slow" -> decode.success(Slow)
+    "fast" -> decode.success(Fast)
+    "faster" -> decode.success(Faster)
+    _ -> decode.failure(Fast, "Could not parse frequency")
   }
 }
 
 fn playlist_decoder() -> Decoder(Playlist) {
   use deezer <- decode.field("deezer", decode.string)
   use spotify <- decode.field("spotify", decode.string)
+  use apple <- decode.field("apple", decode.string)
+  use youtube <- decode.field("youtube", decode.string)
 
-  decode.success(Playlist(deezer:, spotify:))
+  decode.success(Playlist(deezer:, spotify:, apple:, youtube:))
 }
 
 fn frequency_decoder() -> Decoder(Frequency) {
@@ -180,11 +187,11 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
   case msg {
     StartOver -> init(Nil)
     StartQuizz -> {
-      let assert [next_question, ..rest] = model.next_questions
+      let assert [#(question, choices), ..rest] = model.next_questions
       #(
         Model(
           ..model,
-          current_page: Prompt(next_question),
+          current_page: Prompt(question:, choices:),
           next_questions: rest,
           previous_questions: [],
         ),
@@ -196,14 +203,17 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
     }
     NextQuestion(Some(previous_choice)) ->
       case model.current_page, model.next_questions {
-        Prompt(current_quesetion), [next_question, ..rest] -> #(
+        Prompt(question:, choices:), [#(next_question, next_choices), ..rest] -> #(
           Model(
             ..model,
             answers: [previous_choice, ..model.answers],
             next_questions: rest,
-            previous_questions: [current_quesetion, ..model.previous_questions],
+            previous_questions: [
+              #(question, choices),
+              ..model.previous_questions
+            ],
             field_content: None,
-            current_page: Prompt(next_question),
+            current_page: Prompt(question: next_question, choices: next_choices),
           ),
           effect.none(),
         )
@@ -213,20 +223,29 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
             answers: [previous_choice, ..model.answers],
             current_page: LoadingResult,
           ),
-          fetch_frequency(model.answers, GotResults),
+          fetch_frequency(model.answers, "en", GotResults),
           // Here we'll call the API to fetch the results
         )
         Home, _ | LoadingResult, _ | Result, _ -> #(model, effect.none())
       }
     PreviousQuestion -> {
-      let assert Prompt(current_question) = model.current_page
+      let assert Prompt(question: current_question, choices: current_choices) =
+        model.current_page
       case model.previous_questions, model.answers {
-        [previous_question, ..rest], [previous_answer, ..answers] -> #(
+        [#(previous_question, previous_choices), ..rest],
+          [previous_answer, ..answers]
+        -> #(
           Model(
             ..model,
-            current_page: Prompt(previous_question),
+            current_page: Prompt(
+              question: previous_question,
+              choices: previous_choices,
+            ),
             previous_questions: rest,
-            next_questions: [current_question, ..model.next_questions],
+            next_questions: [
+              #(current_question, current_choices),
+              ..model.next_questions
+            ],
             field_content: case previous_answer {
               CustomChoice(_question, text) -> Some(text)
               _ -> None
@@ -265,9 +284,10 @@ fn view(model: Model) -> Element(Msg) {
   let current_question = list.length(model.previous_questions) + 1
   case model {
     Model(current_page: Home, ..) -> view_home()
-    Model(current_page: Prompt(question), ..) ->
+    Model(current_page: Prompt(question, choices), ..) ->
       view_prompt(
         question,
+        choices,
         total_questions,
         current_question,
         model.field_content,
@@ -433,6 +453,7 @@ fn view_footer() -> Element(Msg) {
 
 fn view_prompt(
   question: Question,
+  choices: Answers,
   total_questions: Int,
   question_number: Int,
   field_content: Option(String),
@@ -462,10 +483,10 @@ fn view_prompt(
           view_field_nav(
             total_questions,
             question_number,
-            question.question,
+            question,
             field_content,
           ),
-          question.choices |> view_choices,
+          choices |> view_choices,
         ],
       ),
     ],
@@ -553,7 +574,7 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
 fn view_field_nav(
   total_steps: Int,
   current_step: Int,
-  current_question: String,
+  current_question: Question,
   field_content: Option(String),
 ) -> Element(Msg) {
   html.div(
@@ -661,6 +682,11 @@ fn view_result(result: Frequency) -> Element(Msg) {
     Slower | Slow -> "bg-(image:--house-result-gradient)"
     Faster | Fast -> "bg-(image:--techno-result-gradient)"
   }
+  let pill_color = case result.frequency {
+    // Make tailwind preprocessor happy : bg-primary bg-secondary
+    Faster | Fast -> "primary"
+    Slower | Slow -> "secondary"
+  }
   let genre = case result.frequency {
     Slower | Slow -> "House"
     Faster | Fast -> "Techno"
@@ -709,7 +735,7 @@ fn view_result(result: Frequency) -> Element(Msg) {
           {
             use pills, color <- list.map2(
               [result.tags, result.verbatims, result.artists],
-              ["bg-neutral-content", "bg-accent", "bg-primary"],
+              ["bg-neutral-content", "bg-accent", "bg-" <> pill_color],
             )
             use pill <- list.map(pills)
             html.p(
@@ -764,7 +790,9 @@ fn view_result(result: Frequency) -> Element(Msg) {
             html.button(
               [
                 attribute.class(
-                  "pb-1 btn btn-primary btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg",
+                  "pb-1 btn btn-"
+                  <> pill_color
+                  <> " btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg",
                 ),
               ],
               [html.text("Prends ta place")],
@@ -844,10 +872,13 @@ fn view_result(result: Frequency) -> Element(Msg) {
 
 // DATA    ------------------------------------------------
 
-const questions: List(Question) = [
-  Question(
-    question: "Un lieu idéal pour écouter de la musique ?",
-    choices: [
+const questions: List(#(Question, Answers)) = [
+  #(
+    Question(
+      question_id: "place",
+      question: "Un lieu idéal pour écouter de la musique ?",
+    ),
+    [
       PromptChoice(
         answer: "En plein air, au coucher du soleil 🌞",
         station: Slower,
@@ -866,9 +897,12 @@ const questions: List(Question) = [
       ),
     ],
   ),
-  Question(
-    question: "Quel est ton tempo intérieur ce soir ?",
-    choices: [
+  #(
+    Question(
+      question_id: "spirit",
+      question: "Quel est ton tempo intérieur ce soir ?",
+    ),
+    [
       PromptChoice(
         answer: "Smooth, envie de danser en discutant",
         station: Slower,
@@ -884,9 +918,12 @@ const questions: List(Question) = [
       PromptChoice(answer: "Rapide, j’ai besoin que ça galope", station: Faster),
     ],
   ),
-  Question(
-    question: "Quel lien cherches-tu avec les gens ?",
-    choices: [
+  #(
+    Question(
+      question_id: "outfit",
+      question: "Quel lien cherches-tu avec les gens ?",
+    ),
+    [
       PromptChoice(
         answer: "Danser ensemble, comme une jam session",
         station: Slower,
@@ -902,9 +939,12 @@ const questions: List(Question) = [
       ),
     ],
   ),
-  Question(
-    question: "Si tu devais choisir un détail dans la musique…",
-    choices: [
+  #(
+    Question(
+      question_id: "aesthetic",
+      question: "Si tu devais choisir un détail dans la musique…",
+    ),
+    [
       PromptChoice(
         answer: "Une basse funky, une voix attachante",
         station: Slower,
@@ -923,9 +963,12 @@ const questions: List(Question) = [
       ),
     ],
   ),
-  Question(
-    question: "Qu’est-ce qui t’habite quand tu bouges ?",
-    choices: [
+  #(
+    Question(
+      question_id: "fuel",
+      question: "Qu’est-ce qui t’habite quand tu bouges ?",
+    ),
+    [
       PromptChoice(
         answer: "Une joie simple ancrée, je danse comme je respire",
         station: Slower,

@@ -1,0 +1,111 @@
+place:
+  question: "What's the ideal place to listen to music ?"
+  choices:
+    - answer: "At an open-air"
+      station: slower
+    - answer: "Watching the sun set"
+      station: slower
+    - answer: "In a cosy club"
+      station: slow
+    - answer: "A rooftop with a view"
+      station: slow
+    - answer: "A dark club with strobos"
+      station: fast
+    - answer: "A basement where time stops"
+      station: fast
+    - answer: "An abandoned warehouse"
+      station: faster
+    - answer: "In front of a massive sound system"
+      station: faster
+spirit:
+  question: "What's your inner tempo for tonight ?"
+  choices:
+    - answer: "Laugh it out and dance"
+      station: slower
+    - answer: "Show off my dance moves"
+      station: slower
+    - answer: "Drift on my own"
+      station: slow
+    - answer: "Get lost in the melody"
+      station: slow
+    - answer: "Follow the rythm"
+      station: fast
+    - answer: "To be in sync with the crowd"
+      station: fast
+    - answer: "Perpetual trance"
+      station: faster
+    - answer: "I need it to hit hard"
+      station: faster
+outfit:
+  question: "What's your perfect outfit for a night out ?"
+  choices:
+    - answer: "Fluid and colorful"
+      station: slower
+    - answer: "Disco vintage"
+      station: slower
+    - answer: "Laid-back and stylish"
+      station: slow
+    - answer: "Full of glitter"
+      station: slow
+    - answer: "All in black"
+      station: fast
+    - answer: "Stark, straight up"
+      station: fast
+    - answer: "Ready for anything"
+      station: faster
+    - answer: "Convenient and sporty"
+      station: faster
+aesthetic:
+  question: "What's a detail you notice right away in music ?"
+  choices:
+    - answer: "A funky bass"
+      station: slower
+    - answer: "Powerful vocals"
+      station: slower
+    - answer: "A heady melody"
+      station: slower
+    - answer: "Organic percussions"
+      station: slow
+    - answer: "Airy pads"
+      station: slow
+    - answer: "Glitchy textures"
+      station: slow
+    - answer: "A hypnotic ostinato"
+      station: fast
+    - answer: "A captivating rythm"
+      station: fast
+    - answer: "Progressive basslines"
+      station: fast
+    - answer: "A fast and dry kickdrum"
+      station: faster
+    - answer: "Acid synths"
+      station: faster
+    - answer: "A rolling bassline"
+      station: faster
+fuel:
+  question: "What fuels your nights out ?"
+  choices:
+    - answer: "A fruity cocktail"
+      station: slower
+    - answer: "A fresh iced tea"
+      station: slower
+    - answer: "A refreshing beer"
+      station: slower
+    - answer: "Kombutcha"
+      station: slow
+    - answer: "Bissap"
+      station: slow
+    - answer: "Energy drink"
+      station: slow
+    - answer: "Hard liquor"
+      station: fast
+    - answer: "Anything sparkling"
+      station: fast
+    - answer: "A B52"
+      station: fast
+    - answer: "Some water - stay hydrated !"
+      station: faster
+    - answer: "Nuthin"
+      station: faster
+    - answer: "Only the music"
+      station: faster
