@@ -5,8 +5,6 @@ import gleam/int
 import gleam/json
 import gleam/list
 import gleam/option.{type Option, None, Some}
-import gleam/result
-import gleam/string
 import lustre
 import lustre/attribute
 import lustre/effect.{type Effect}
@@ -62,7 +60,12 @@ fn dummy_result() {
     verbatims: ["Lorem Ipsum", "Dolor Sit Amet", "Consectetur Adipiscing Elit"],
     tags: ["Etheré", "Doux", "Calme", "Paisible"],
     artists: ["Alex Kassian", "Asphalt DJ", "Paramida"],
-    playlist: Playlist(deezer: "", spotify: "", apple: "", youtube: ""),
+    playlist: Playlist(
+      deezer: "https://link.deezer.com/s/30yHSUSoWLo9rwTU4qpQs",
+      spotify: "https://open.spotify.com/playlist/0L4xtzuxTmNMXFn0dDdu79",
+      apple: "https://music.apple.com/fr/playlist/techno-hypno-mentale/pl.u-76E6uNNXJdg",
+      youtube: "",
+    ),
   )
 }
 
@@ -691,6 +694,12 @@ fn view_result(result: Frequency) -> Element(Msg) {
     Slower | Slow -> "à l'Atrium"
     Faster | Fast -> "au Refuge"
   }
+  let Playlist(
+    deezer: deezer_link,
+    spotify: spotify_link,
+    apple: apple_music_link,
+    youtube: youtube_link,
+  ) = result.playlist
   let frequency_pane =
     html.section(
       [
@@ -783,13 +792,18 @@ fn view_result(result: Frequency) -> Element(Msg) {
             ),
           ],
           [
-            html.button(
+            html.a(
               [
                 attribute.class(
                   "pb-1 btn btn-"
                   <> pill_color
                   <> " btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg",
                 ),
+                attribute.href(
+                  "https://shotgun.live/fr/events/station-r-eclectique-x-od",
+                ),
+                attribute.target("_blank"),
+                attribute.rel("noopener noreferrer"),
               ],
               [html.text("Prends ta place")],
             ),
@@ -803,40 +817,54 @@ fn view_result(result: Frequency) -> Element(Msg) {
             ),
             html.p([], [html.text("Écoute la playlist associée :")]),
             html.div([attribute.class("flex gap-2")], [
-              html.button(
+              html.a(
                 [
                   attribute.class(
-                    "place-items-center btn btn-ghost btn-circle btn-sm fa-brands text-xl",
+                    "place-content-center btn btn-ghost btn-circle btn-sm fa-brands text-xl",
                   ),
+                  attribute.href(deezer_link),
+                  attribute.target("_blank"),
+                  attribute.rel("noopener noreferrer"),
                 ],
                 [
                   html.img([
-                    attribute.class("h-6 py-1 transition-all hover:invert"),
+                    attribute.class(
+                      "size-full h-6 py-1 transition-all hover:invert",
+                    ),
                     attribute.src("/src/assets/logos/deezer.svg"),
                   ]),
                 ],
               ),
-              html.button(
+              html.a(
                 [
                   attribute.class(
-                    "btn btn-ghost btn-circle btn-sm fa-brands fa-spotify text-xl",
+                    "place-content-center btn btn-ghost btn-circle btn-sm fa-brands fa-spotify text-xl",
                   ),
+                  attribute.href(spotify_link),
+                  attribute.target("_blank"),
+                  attribute.rel("noopener noreferrer"),
                 ],
                 [],
               ),
-              html.button(
+              html.a(
                 [
                   attribute.class(
-                    "btn btn-ghost btn-circle btn-sm fa-brands fa-apple text-xl",
+                    "place-content-center btn btn-ghost btn-circle btn-sm fa-brands fa-apple text-xl",
                   ),
+                  attribute.href(apple_music_link),
+                  attribute.target("_blank"),
+                  attribute.rel("noopener noreferrer"),
                 ],
                 [],
               ),
-              html.button(
+              html.a(
                 [
                   attribute.class(
-                    "btn btn-ghost btn-circle btn-sm fa-brands fa-youtube text-xl",
+                    "place-content-center btn btn-ghost btn-circle btn-sm fa-brands fa-youtube text-xl",
                   ),
+                  attribute.href(youtube_link),
+                  attribute.target("_blank"),
+                  attribute.rel("noopener noreferrer"),
                 ],
                 [],
               ),
