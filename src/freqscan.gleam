@@ -125,16 +125,16 @@ fn choice_to_json(choice: Choice) -> json.Json {
 
 fn fetch_frequency(
   answers: List(Choice),
-  language: String,
+  _language: String,
   on_response handle_response: fn(Result(Frequency, rsvp.Error)) -> Msg,
 ) -> Effect(Msg) {
-  let url = "http://localhost:8000/predict?language=" <> language
+  let api_url = "https://freqgen.yefimch.uk/predict"
   let decoder = frequency_decoder()
   let handler = rsvp.expect_json(decoder, handle_response)
   let body =
     json.object([#("answers", json.array(answers, of: choice_to_json))])
 
-  rsvp.post(url, body, handler)
+  rsvp.post(api_url, body, handler)
 }
 
 fn station_decoder() -> Decoder(Station) {
