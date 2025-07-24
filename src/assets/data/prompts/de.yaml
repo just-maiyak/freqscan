@@ -1,0 +1,111 @@
+place:
+  question: "Un lieu idéal pour écouter de la musique ?"
+  choices:
+    - answer: "En open-air"
+      station: slower
+    - answer: "Devant un coucher de soleil"
+      station: slower
+    - answer: "Un club cosy"
+      station: slow
+    - answer: "Un rooftop avec vue"
+      station: slow
+    - answer: "Un club sombre avec strobos"
+      station: fast
+    - answer: "Une cave où le temps disparait"
+      station: fast
+    - answer: "Une friche industrielle"
+      station: faster
+    - answer: "Devant un système son massif"
+      station: faster
+spirit:
+  question: "Quel est ton tempo intérieur ce soir ?"
+  choices:
+    - answer: "Rire en dansant"
+      station: slower
+    - answer: "Bouger à ma façon"
+      station: slower
+    - answer: "Planer en solo"
+      station: slow
+    - answer: "Me laisser porter par la mélodie"
+      station: slow
+    - answer: "Me perdre dans le rythme"
+      station: fast
+    - answer: "Être en phase avec la foule"
+      station: fast
+    - answer: "Une transe perpétuelle"
+      station: faster
+    - answer: "Besoin que ça galope"
+      station: faster
+outfit:
+  question: "Ta tenue parfaite ?"
+  choices:
+    - answer: "Fluide et colorée"
+      station: slower
+    - answer: "Vintage et disco"
+      station: slower
+    - answer: "Décontractée et stylée"
+      station: slow
+    - answer: "Pleine de paillettes"
+      station: slow
+    - answer: "Noir c'est noir"
+      station: fast
+    - answer: "Sobre et efficace"
+      station: fast
+    - answer: "Tout terrain"
+      station: faster
+    - answer: "Pratique et sport"
+      station: faster
+aesthetic:
+  question: "Si tu devais choisir un détail dans la musique…"
+  choices:
+    - answer: "Une basse funky"
+      station: slower
+    - answer: "Des vocaux puissants"
+      station: slower
+    - answer: "Une mélodie entêtante"
+      station: slower
+    - answer: "Des percussions organiques"
+      station: slow
+    - answer: "Une nappe aérienne"
+      station: slow
+    - answer: "Des textures glitchy"
+      station: slow
+    - answer: "Un ostinato hypnotique"
+      station: fast
+    - answer: "Un rythme envoutant"
+      station: fast
+    - answer: "Des basses progressives"
+      station: fast
+    - answer: "Un kick sec et rapide"
+      station: faster
+    - answer: "Un synthé acide"
+      station: faster
+    - answer: "Une rolling bassline"
+      station: faster
+fuel:
+  question: "Quel est ton carburant en soirée ?"
+  choices:
+    - answer: "Un cocktail fruité"
+      station: slower
+    - answer: "Une infusion fraîche"
+      station: slower
+    - answer: "Une bière fraîche"
+      station: slower
+    - answer: "Un kombutcha"
+      station: slow
+    - answer: "Un bissap"
+      station: slow
+    - answer: "Une boisson énergisante"
+      station: slow
+    - answer: "De l'alcool fort"
+      station: fast
+    - answer: "Un soda bien pétillant"
+      station: fast
+    - answer: "Un B52"
+      station: fast
+    - answer: "De l'eau pour rester hydraté"
+      station: faster
+    - answer: "Rien"
+      station: faster
+    - answer: "Juste la musique"
+      station: faster
