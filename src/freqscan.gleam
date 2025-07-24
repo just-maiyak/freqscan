@@ -462,7 +462,7 @@ fn view_prompt(
       html.div(
         [
           attribute.class(
-            "flex flex-col w-screen py-0 gap-2 @4xl:gap-7 text-neutral-content text-center",
+            "flex flex-col w-full py-0 mb-8 mobileLandscape:mb-0 @4xl:mb-32 gap-2 @4xl:gap-7 text-neutral-content text-center",
           ),
         ],
         [
@@ -498,7 +498,7 @@ fn view_step_indicator(total_steps: Int, current_step: Int) -> Element(Msg) {
   html.ul(
     [
       attribute.class(
-        "steps text-center text-neutral font-semibold font-darker text-xl",
+        "steps w-full @4xl:w-xl place-self-center text-center text-neutral font-semibold font-darker text-xl",
       ),
     ],
     list.map(steps, fn(step) {
@@ -561,11 +561,7 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
       ),
       event.on_click(ChangeField(answer)),
     ],
-    [
-      html.text(
-        answer |> string.split(", ") |> list.first |> result.unwrap("") <> "…",
-      ),
-    ],
+    [html.text(answer)],
   )
 }
 
@@ -877,22 +873,10 @@ const questions: List(#(Question, Answers)) = [
       question: "Un lieu idéal pour écouter de la musique ?",
     ),
     [
-      PromptChoice(
-        answer: "En plein air, au coucher du soleil 🌞",
-        station: Slower,
-      ),
-      PromptChoice(
-        answer: "Un rooftop cosy, avec lumières chaudes 🧡",
-        station: Slow,
-      ),
-      PromptChoice(
-        answer: "Un sous-sol moite, sombre et un systeme son bien réglé 🏭",
-        station: Fast,
-      ),
-      PromptChoice(
-        answer: "Une friche industrielle, avec un maxi mur de son 🏚️",
-        station: Faster,
-      ),
+      PromptChoice(answer: "En plein air", station: Slower),
+      PromptChoice(answer: "Un rooftop cosy", station: Slow),
+      PromptChoice(answer: "Un sous-sol moite", station: Fast),
+      PromptChoice(answer: "Une friche industrielle", station: Faster),
     ],
   ),
   #(
@@ -901,40 +885,19 @@ const questions: List(#(Question, Answers)) = [
       question: "Quel est ton tempo intérieur ce soir ?",
     ),
     [
-      PromptChoice(
-        answer: "Smooth, envie de danser en discutant",
-        station: Slower,
-      ),
-      PromptChoice(
-        answer: "Flottant et groovy, je me laisse porter par la mélodie",
-        station: Slow,
-      ),
-      PromptChoice(
-        answer: "Soutenu, il faut que je me dépense au rythme du son",
-        station: Fast,
-      ),
-      PromptChoice(answer: "Rapide, j’ai besoin que ça galope", station: Faster),
+      PromptChoice(answer: "Rire en dansant", station: Slower),
+      PromptChoice(answer: "Me perdre dans le rythme", station: Slow),
+      PromptChoice(answer: "Besoin que ça galope", station: Fast),
+      PromptChoice(answer: "Rapide", station: Faster),
     ],
   ),
   #(
-    Question(
-      question_id: "outfit",
-      question: "Quel lien cherches-tu avec les gens ?",
-    ),
+    Question(question_id: "outfit", question: "Ta tenue parfaite ?"),
     [
-      PromptChoice(
-        answer: "Danser ensemble, comme une jam session",
-        station: Slower,
-      ),
-      PromptChoice(
-        answer: "Partager des regards, des sourires, sans parler",
-        station: Slow,
-      ),
-      PromptChoice(answer: "Me perdre dans la masse, en rythme", station: Fast),
-      PromptChoice(
-        answer: "Être seul·e dans ma bulle, en transe",
-        station: Faster,
-      ),
+      PromptChoice(answer: "Fluide et colorée", station: Slower),
+      PromptChoice(answer: "Décontractée et stylée", station: Slow),
+      PromptChoice(answer: "Sobre et efficace", station: Fast),
+      PromptChoice(answer: "Pratique et sport", station: Faster),
     ],
   ),
   #(
@@ -943,46 +906,22 @@ const questions: List(#(Question, Answers)) = [
       question: "Si tu devais choisir un détail dans la musique…",
     ),
     [
-      PromptChoice(
-        answer: "Une basse funky, une voix attachante",
-        station: Slower,
-      ),
-      PromptChoice(
-        answer: "Des percussions organiques, une mélodie puissante",
-        station: Slow,
-      ),
-      PromptChoice(
-        answer: "Un ostinato entêtant, des synthés abstraits",
-        station: Fast,
-      ),
-      PromptChoice(
-        answer: "Un rythme extatique, des synthés comme des lasers",
-        station: Faster,
-      ),
+      PromptChoice(answer: "Une basse funky", station: Slower),
+      PromptChoice(answer: "Des percussions organiques", station: Slow),
+      PromptChoice(answer: "Un ostinato entêtant", station: Fast),
+      PromptChoice(answer: "Un rythme extatique", station: Faster),
     ],
   ),
   #(
     Question(
       question_id: "fuel",
-      question: "Qu’est-ce qui t’habite quand tu bouges ?",
+      question: "Quel est ton carburant en soirée ?",
     ),
     [
-      PromptChoice(
-        answer: "Une joie simple ancrée, je danse comme je respire",
-        station: Slower,
-      ),
-      PromptChoice(
-        answer: "Une ivresse douce, entre imaginaire et mouvement",
-        station: Slow,
-      ),
-      PromptChoice(
-        answer: "Une tension libérée, je tape du pied en rythme",
-        station: Fast,
-      ),
-      PromptChoice(
-        answer: "Une transe étrange, presque mystique",
-        station: Faster,
-      ),
+      PromptChoice(answer: "Un cocktail fruité", station: Slower),
+      PromptChoice(answer: "Un kombutcha", station: Slow),
+      PromptChoice(answer: "De l'alcool fort", station: Fast),
+      PromptChoice(answer: "De l'eau pour rester hydraté", station: Faster),
     ],
   ),
 ]
