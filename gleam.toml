@@ -1,5 +1,5 @@
 name = "freqscan"
-version = "0.1.0"
+version = "0.1.1"
 target = "javascript"
 
 description = "A radio frequency name generator project"
