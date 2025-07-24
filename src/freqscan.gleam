@@ -356,7 +356,7 @@ fn view_home() -> Element(Msg) {
                 "w-2xs px-3 text-sm "
                 <> "@lg:w-md @lg:px-5 @lg:text-lg "
                 <> "@4xl:w-xl @lg:px-6 @4xl:text-2xl "
-                <> "text-shadow-md/30 text-shadow-white "
+                <> "text-shadow-md/30 text-shadow-neutral-content "
                 <> "font-normal text-base-content font-darker",
               ),
             ],
@@ -414,7 +414,15 @@ fn view_result_header() -> Element(Msg) {
       ],
       [],
     ),
-    html.div([attribute.class("grow flex flex-row-reverse w-screen")], [
+    html.div([attribute.class("flex flex-row w-screen")], [
+      html.p(
+        [
+          attribute.class(
+            "grow place-content-center pl-4 pb-1 font-darker font-medium text-2xl lg:pl-24",
+          ),
+        ],
+        [html.text("Ma fréquence musicale")],
+      ),
       html.div(
         [
           attribute.class(
@@ -704,12 +712,12 @@ fn view_result(result: Frequency) -> Element(Msg) {
     Slower | Slow -> "secondary"
   }
   let genre = case result.frequency {
-    Slower | Slow -> "House"
-    Faster | Fast -> "Techno"
+    Slower | Slow -> "House solaire"
+    Faster | Fast -> "Techno sombre"
   }
   let location = case result.frequency {
-    Slower | Slow -> "à l'Atrium"
-    Faster | Fast -> "au Refuge"
+    Slower | Slow -> "L'Atrium"
+    Faster | Fast -> "Le Refuge"
   }
   let Playlist(
     deezer: deezer_link,
@@ -731,17 +739,25 @@ fn view_result(result: Frequency) -> Element(Msg) {
         html.h1(
           [
             attribute.class(
-              "pb-1 text-neutral-content text-6xl mobileLandscape:text-4xl font-obviously font-normal italic tracking-[-.06em]",
+              "pb-1 mb-2 text-neutral-content text-6xl mobileLandscape:text-4xl font-obviously font-normal italic tracking-[-.06em]",
             ),
           ],
           [result.frequency |> station_to_string |> html.text],
         ),
-        html.p([attribute.class("h-6 text-neutral-content font-normal")], [
-          html.text("Ma fréquence musicale : " <> genre),
+        html.p([attribute.class("font-medium")], [
+          html.text(genre <> " dans "),
+          html.span(
+            [
+              attribute.class(
+                "pb-1 px-3 bg-"
+                <> pill_color
+                <> " font-bold text-md mobileLandscape:text-sm rounded-3xl",
+              ),
+            ],
+            [html.text(location)],
+          ),
         ]),
-        html.p([], [
-          html.text("Le 31 juillet " <> location <> " de la Rotonde Stalingrad"),
-        ]),
+        html.p([], [html.text("Le 31 juillet à la Rotonde Stalingrad")]),
         html.h2(
           [
             attribute.class(
