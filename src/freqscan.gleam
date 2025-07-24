@@ -379,42 +379,39 @@ fn view_header() -> Element(Msg) {
 }
 
 fn view_result_header() -> Element(Msg) {
-  html.header(
-    [attribute.class("flex flex-col place-self-start bg-black")],
-    [
+  html.header([attribute.class("flex flex-col place-self-start bg-black")], [
+    html.div(
+      [
+        attribute.class(
+          "h-24 w-screen bg-(image:--header-result-gradient) mobileLandscape:hidden",
+        ),
+      ],
+      [],
+    ),
+    html.div([attribute.class("grow flex flex-row-reverse w-screen")], [
       html.div(
         [
           attribute.class(
-            "h-24 w-screen bg-(image:--header-result-gradient) mobileLandscape:hidden"
+            "px-3 pb-2 place-content-center "
+            <> "bg-white text-black text-3xl font-light font-obviously",
           ),
         ],
-        [],
+        [
+          html.span([attribute.class("mr-1 italic tracking-[-.12em]")], [
+            html.text("station"),
+          ]),
+          html.span([attribute.class("font-bold")], [html.text("R")]),
+        ],
       ),
-      html.div([attribute.class("grow flex flex-row-reverse w-screen")], [
-        html.div(
-          [
-            attribute.class(
-              "px-3 pb-2 place-content-center "
-              <> "bg-white text-black text-3xl font-light font-obviously",
-            ),
-          ],
-          [
-            html.span([attribute.class("mr-1 italic tracking-[-.12em]")], [
-              html.text("station"),
-            ]),
-            html.span([attribute.class("font-bold")], [html.text("R")]),
-          ],
-        ),
-      ]),
-    ],
-  )
+    ]),
+  ])
 }
 
 fn view_footer() -> Element(Msg) {
   html.footer(
     [
       attribute.class(
-        "relative flex flex-col-reverse gap-0 place-content-end mobileLandscape:hidden"
+        "relative flex flex-col-reverse gap-0 place-content-end mobileLandscape:hidden",
       ),
     ],
     [
@@ -423,7 +420,9 @@ fn view_footer() -> Element(Msg) {
         attribute.src("./src/assets/dashed-line-bottom.svg"),
       ]),
       html.img([
-        attribute.class("landscape:absolute landscape:bottom-6 h-18 lg:h-24 place-self-end"),
+        attribute.class(
+          "landscape:absolute landscape:bottom-6 h-18 lg:h-24 place-self-end",
+        ),
         attribute.src("./src/assets/logos.svg"),
       ]),
     ],
@@ -697,8 +696,8 @@ fn view_result(result: Frequency) -> Element(Msg) {
           [
             attribute.class(
               "grow h-[40vh] mobileLandscape:min-h-[20vh] place-content-center "
-                    <>"text-neutral-content text-6xl mobileLandscape:text-4xl "
-                    <>"font-obviously font-normal italic tracking-[-.06em]",
+              <> "text-neutral-content text-6xl mobileLandscape:text-4xl "
+              <> "font-obviously font-normal italic tracking-[-.06em]",
             ),
           ],
           [html.text(result.name)],
@@ -714,7 +713,9 @@ fn view_result(result: Frequency) -> Element(Msg) {
             html.p(
               [
                 attribute.class(
-                  "pb-1 px-3 " <> color <> " shadow-lg font-bold text-md mobileLandscape:text-sm rounded-3xl",
+                  "pb-1 px-3 "
+                  <> color
+                  <> " shadow-lg font-bold text-md mobileLandscape:text-sm rounded-3xl",
                 ),
               ],
               [html.text(pill)],
@@ -732,7 +733,7 @@ fn view_result(result: Frequency) -> Element(Msg) {
           "shrink py-4 mobileLandscape:py-2 px-8 "
           <> "flex flex-col text-center place-items-center place-content-center gap-4 "
           <> "text-2xl mobileLandscape:text-lg/6 font-darker font-extrabold "
-            <>"bg-(image:--noise)",
+          <> "bg-(image:--noise)",
         ),
       ],
       [
@@ -742,7 +743,7 @@ fn view_result(result: Frequency) -> Element(Msg) {
           ),
         ]),
         html.p([attribute.class("font-semibold")], [
-          html.text( 
+          html.text(
             "Nous avons associé tes réponses à des propositions similaires...",
           ),
         ]),
@@ -759,12 +760,21 @@ fn view_result(result: Frequency) -> Element(Msg) {
           ],
           [
             html.button(
-              [attribute.class("pb-1 btn btn-primary btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg")],
+              [
+                attribute.class(
+                  "pb-1 btn btn-primary btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg",
+                ),
+              ],
               [html.text("Prends ta place")],
             ),
-            html.button([attribute.class("pb-1 btn btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg")], [
-              html.text("Partage ta fréquence"),
-            ]),
+            html.button(
+              [
+                attribute.class(
+                  "pb-1 btn btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg",
+                ),
+              ],
+              [html.text("Partage ta fréquence")],
+            ),
             html.p([], [html.text("Écoute la playlist associée :")]),
             html.div([attribute.class("flex gap-2")], [
               html.button(
@@ -809,14 +819,14 @@ fn view_result(result: Frequency) -> Element(Msg) {
         ),
       ],
     )
-  html.div([
-        attribute.class(
-        "flex flex-col "
-        <> "w-dvw min-w-xs "
-        <> "h-full min-h-svh")
+  html.div(
+    [
+      attribute.class(
+        "flex flex-col " <> "w-dvw min-w-xs " <> "h-full min-h-svh",
+      ),
     ],
     [
-    view_result_header(),
+      view_result_header(),
       html.div(
         [
           attribute.class(
@@ -825,7 +835,7 @@ fn view_result(result: Frequency) -> Element(Msg) {
         ],
         [frequency_pane, cta_pane],
       ),
-    view_footer(),
+      view_footer(),
     ],
   )
 }
