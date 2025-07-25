@@ -169,6 +169,7 @@ type Msg {
   NextQuestion(choice: Option(Choice))
   PreviousQuestion
   ChangeField(String)
+  RefreshNudges
   GotResults(Result(Frequency, rsvp.Error))
   StartOver
   ShareFrequency
@@ -271,7 +272,8 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
       echo error
       #(model, effect.none())
     }
-    NoOp -> #(model, effect.none())
+    // Re-rendering with the same model should yield different nudges
+    RefreshNudges | NoOp -> #(model, effect.none())
   }
 }
 
@@ -542,6 +544,15 @@ fn view_step_indicator(total_steps: Int, current_step: Int) -> Element(Msg) {
 }
 
 fn view_choices(choices: List(Choice)) -> Element(Msg) {
+  let refresh_button =
+    html.button(
+      [
+        attribute.class("btn btn-outline btn-primary btn-circle btn-xs"),
+        event.on_click(RefreshNudges),
+      ],
+      [html.span([attribute.class("fa-solid fa-rotate-right")], [])],
+    )
+  let choice_buttons = list.map(choices, view_choice_button) |> list.shuffle
   html.div(
     [
       attribute.class(
@@ -555,11 +566,10 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
       html.div(
         [
           attribute.class(
-            "flex flex-wrap place-content-center "
-            <> "place-items-center gap-2 font-darker",
+            "flex flex-wrap place-content-center " <> "gap-2 font-darker",
           ),
         ],
-        list.map(choices, view_choice_button),
+        list.reverse([refresh_button, ..choice_buttons]),
       ),
     ],
   )
