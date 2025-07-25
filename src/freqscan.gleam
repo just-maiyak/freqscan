@@ -398,7 +398,7 @@ fn view_header() -> Element(Msg) {
       attribute.class(
         "flex flex-row place-self-start mobileLandscape:hidden "
         <> "h-24 w-screen "
-        <> "bg-repeat-x bg-[url(/src/assets/dashed-line-top.svg)]",
+        <> "bg-repeat-x bg-(image:--dashed-line-top)",
       ),
     ],
     [],
