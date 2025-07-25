@@ -418,7 +418,7 @@ fn view_result_header() -> Element(Msg) {
       html.p(
         [
           attribute.class(
-            "grow place-content-center pl-4 pb-1 font-darker font-medium text-2xl lg:pl-24",
+            "grow place-content-center pl-4 pb-1 font-darker font-medium text-white text-2xl lg:pl-24",
           ),
         ],
         [html.text("Ma fréquence musicale")],
