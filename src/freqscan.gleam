@@ -418,7 +418,10 @@ fn view_result_header() -> Element(Msg) {
       html.p(
         [
           attribute.class(
-            "grow place-content-center pl-4 pb-1 font-darker font-medium text-white text-2xl lg:pl-24",
+            "grow place-content-center "
+            <> "pl-4 pb-1 lg:pl-24 "
+            <> "font-darker font-medium text-white text-2xl "
+            <> "bg-(image:--noise)",
           ),
         ],
         [html.text("Ma fréquence musicale")],
@@ -798,8 +801,7 @@ fn view_result(result: Frequency) -> Element(Msg) {
         attribute.class(
           "shrink py-4 mobileLandscape:py-2 px-8 "
           <> "flex flex-col text-center place-items-center place-content-center gap-4 "
-          <> "text-2xl mobileLandscape:text-lg/6 font-darker font-extrabold "
-          <> "bg-(image:--noise)",
+          <> "text-2xl mobileLandscape:text-lg/6 font-darker font-extrabold",
         ),
       ],
       [
