@@ -55,7 +55,6 @@ type Frequency {
   )
 }
 
-
 type Questionnaire {
   Questionnaire(questions: List(#(Question, Answers)))
 }
@@ -336,10 +335,10 @@ fn view_home() -> Element(Msg) {
           html.h1(
             [
               attribute.class(
-                "mb-2 p-4 pt-1 text-3xl "
+                "size-fit mb-2 p-4 pt-1 text-4xl "
                 <> "@lg:mb-4 @lg:p-8 @lg:pt-3 @lg:text-5xl "
                 <> "@4xl:mb-5 @4xl:p-12 @4xl:pt-5 @4xl:text-7xl "
-                <> "size-fit text-neutral font-normal italic font-obviously tracking-[-.12em] "
+                <> "text-neutral font-normal italic font-obviously tracking-[-.12em] "
                 <> "animate__animated animate__fadeInDown",
               ),
               attribute.style("background", "white"),
@@ -349,7 +348,7 @@ fn view_home() -> Element(Msg) {
           html.p(
             [
               attribute.class(
-                "w-2xs px-3 text-sm "
+                "w-sm px-3 text-lg "
                 <> "@lg:w-md @lg:px-5 @lg:text-lg "
                 <> "@4xl:w-xl @lg:px-6 @4xl:text-2xl "
                 <> "text-shadow-md/30 text-shadow-neutral-content "
