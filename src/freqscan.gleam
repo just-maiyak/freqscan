@@ -344,7 +344,8 @@ fn view_home() -> Element(Msg) {
                 "mb-2 p-4 pt-1 text-3xl "
                 <> "@lg:mb-4 @lg:p-8 @lg:pt-3 @lg:text-5xl "
                 <> "@4xl:mb-5 @4xl:p-12 @4xl:pt-5 @4xl:text-7xl "
-                <> "size-fit text-neutral font-normal italic font-obviously tracking-[-.12em]",
+                <> "size-fit text-neutral font-normal italic font-obviously tracking-[-.12em] "
+                <> "animate__animated animate__fadeInDown",
               ),
               attribute.style("background", "white"),
             ],
@@ -363,11 +364,11 @@ fn view_home() -> Element(Msg) {
             [
               html.strong([], [
                 html.text(
-                  "Réponds au test pour savoir quelle onde vibre en toi. ",
+                  "Réponds aux questions pour savoir quelle onde vibre en toi. ",
                 ),
               ]),
               html.text(
-                "À la fin, on t'attribue une station ...et la vibe qui va avec.",
+                "À la fin, on t'attribue une fréquence de radio ...et la vibe qui va avec.",
               ),
             ],
           ),
@@ -375,9 +376,15 @@ fn view_home() -> Element(Msg) {
             [
               attribute.class(
                 "btn btn-sm size-fit m-4 pb-1 "
+                <> "inline-block "
                 <> "@lg:btn-md @4xl:btn-lg "
                 <> "font-darker "
-                <> "text-xl @lg:text-2xl @4xl:text-3xl",
+                <> "text-xl @lg:text-2xl @4xl:text-3xl "
+                <> "animate-bounce-slow",
+              ),
+              attribute.style(
+                "animation-delay",
+                int.random(5000) + 1000 |> int.to_string <> "ms",
               ),
               event.on_click(StartQuizz),
             ],
@@ -487,7 +494,8 @@ fn view_prompt(
                 "p-2 text-2xl "
                 <> "@lg:text-3xl "
                 <> "@4xl:text-5xl "
-                <> "text-neutral font-normal italic font-obviously tracking-[-.08em]",
+                <> "text-neutral font-normal italic font-obviously tracking-[-.08em] "
+                <> "animate__animated animate__fadeIn",
               ),
             ],
             [html.text(question.question)],
@@ -566,12 +574,18 @@ fn view_choice_button(choice: Choice) -> Element(Msg) {
     [
       attribute.class(
         "btn btn-soft btn-xs "
+        <> "inline-block "
         <> "px-5 pb-1 "
         <> "opacity-50 shadow-none "
         <> "transition "
         <> "text-sm @lg:text-lg "
         <> "hover:opacity-90 hover:shadow-(color:--color-primary) "
-        <> "active:shadow-md active:shadow-(color:--color-primary) active:opacity-100",
+        <> "active:shadow-md active:shadow-(color:--color-primary) active:opacity-100 "
+        <> "animate-bounce-slow",
+      ),
+      attribute.style(
+        "animation-delay",
+        int.random(2000) + 3000 |> int.to_string <> "ms",
       ),
       event.on_click(ChangeField(answer)),
     ],
@@ -739,7 +753,10 @@ fn view_result(result: Frequency) -> Element(Msg) {
         html.h1(
           [
             attribute.class(
-              "pb-1 mb-2 text-neutral-content text-6xl mobileLandscape:text-4xl font-obviously font-normal italic tracking-[-.06em]",
+              "pb-1 mb-2 "
+              <> "text-neutral-content text-6xl mobileLandscape:text-4xl "
+              <> "font-obviously font-normal italic tracking-[-.06em] "
+              <> "animate__animated animate__fadeInUp",
             ),
           ],
           [result.frequency |> station_to_string |> html.text],
@@ -761,9 +778,10 @@ fn view_result(result: Frequency) -> Element(Msg) {
         html.h2(
           [
             attribute.class(
-              "grow h-[40vh] mobileLandscape:min-h-[20vh] place-content-center "
+              "grow min-h-[40vh] mobileLandscape:min-h-[20vh] place-content-center "
               <> "text-neutral-content text-6xl mobileLandscape:text-4xl "
-              <> "font-obviously font-normal italic tracking-[-.06em]",
+              <> "font-obviously font-normal italic tracking-[-.06em] "
+              <> "animate__animated animate__fadeInUp",
             ),
           ],
           [html.text(result.name)],
@@ -781,7 +799,12 @@ fn view_result(result: Frequency) -> Element(Msg) {
                 attribute.class(
                   "pb-1 px-3 "
                   <> color
-                  <> " shadow-lg font-bold text-md mobileLandscape:text-sm rounded-3xl",
+                  <> " shadow-lg font-bold text-md mobileLandscape:text-sm rounded-3xl "
+                  <> "animate-bounce-slow",
+                ),
+                attribute.style(
+                  "animation-delay",
+                  int.random(7000) + 3000 |> int.to_string <> "ms",
                 ),
               ],
               [html.text(pill)],
@@ -828,10 +851,12 @@ fn view_result(result: Frequency) -> Element(Msg) {
             html.a(
               [
                 attribute.class(
-                  "pb-1 btn btn-"
+                  "pb-1 mb-1 btn btn-"
                   <> pill_color
-                  <> " btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg",
+                  <> " btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg "
+                  <> "animate-bounce-slow",
                 ),
+                attribute.style("animation-delay", "1s"),
                 attribute.href(
                   "https://shotgun.live/fr/events/station-r-eclectique-x-od",
                 ),
@@ -862,7 +887,7 @@ fn view_result(result: Frequency) -> Element(Msg) {
                 [
                   html.img([
                     attribute.class(
-                      "size-full h-6 py-1 transition-all hover:invert",
+                      "size-full h-6 py-1 transition-all dark:hover:invert",
                     ),
                     attribute.src("/src/assets/logos/deezer.svg"),
                   ]),
