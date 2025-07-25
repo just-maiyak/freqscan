@@ -29,7 +29,7 @@ jobs:
         run: |
           sed -i 's|src/assets|assets|' src/freqscan.gleam
           sed -i 's|src/assets|freqscan/assets|' src/freqscan.css
-          sed -i 's|"src/assets|"freqscan/assets|' index.html
+          sed -i 's|"src/assets|"assets|' index.html
       - name: Build app
         run: gleam run -m lustre/dev build app --minify
       - name: Copy output to dist
