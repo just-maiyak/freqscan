@@ -86,6 +86,7 @@
 
 :root {
   --noise: url(/src/assets/noise.svg);
+  --dashed-line-top: url(/src/assets/dashed-line-top.svg);
   --home-background: var(--noise), url(/src/assets/home_background.svg);
   --duotone-gradient: var(--noise), linear-gradient(to bottom, var(--color-accent) 3.8%, var(--color-secondary) 26.35%, var(--color-accent) 56.23%, var(--color-primary) 104.99%);
   --loading-gradient: repeating-linear-gradient(to bottom, var(--color-accent) 0%, var(--color-secondary) 2%, var(--color-accent) 5%, var(--color-neutral) 7%, var(--color-primary) 10%, var(--color-neutral) 13%, var(--color-accent) 16%, var(--color-secondary) 17%, var(--color-accent) 20%, var(--color-accent) 22%, var(--color-secondary) 26%, var(--color-accent) 27%);
