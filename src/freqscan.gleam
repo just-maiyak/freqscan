@@ -166,7 +166,7 @@ fn frequency_decoder() -> Decoder(Frequency) {
   use tags <- decode.field("tags", decode.list(decode.string))
   use artists <- decode.field("artists", decode.list(decode.string))
   use playlist <- decode.field("playlist", playlist_decoder())
-  use image <- decode.field("image ", decode.string)
+  use image <- decode.field("image", decode.string)
 
   decode.success(Frequency(
     frequency:,
