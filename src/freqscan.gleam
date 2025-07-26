@@ -575,7 +575,7 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
     ],
     [
       html.p([attribute.class("font-darker pb-1 @lg:text-xl")], [
-        html.text("En manque d'inspi ?"),
+        html.text("Je choisis parmi ces propositions :"),
       ]),
       html.div(
         [
@@ -659,7 +659,7 @@ fn view_field_nav(
             attribute.type_("text"),
             attribute.pattern(field_validation_string),
             attribute.required(True),
-            attribute.placeholder("Écris ta réponse"),
+            attribute.placeholder("J’écris ma propre réponse …"),
             attribute.attribute("minlength", int.to_string(input_min_length)),
             attribute.attribute("maxlength", int.to_string(input_max_length)),
             event.on_input(ChangeField),
