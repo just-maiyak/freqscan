@@ -781,6 +781,7 @@ fn view_result(result: Frequency) -> Element(Msg) {
               <> "font-obviously font-normal italic tracking-[-.06em] "
               <> "animate__animated animate__fadeInUp",
             ),
+            attribute.style("animation-delay", "400ms"),
           ],
           [result.frequency |> station_to_string |> html.text],
         ),
