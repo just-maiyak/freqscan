@@ -344,15 +344,17 @@ fn view_home() -> Element(Msg) {
       html.div(
         [
           attribute.class(
-            "flex flex-col place-items-center py-0 gap-2 @4xl:gap-3 text-neutral-content text-center",
+            "flex flex-col place-items-center"
+            <> " py-0 gap-2 @4xl:gap-3 "
+            <> "text-neutral-content text-center",
           ),
         ],
         [
           html.h1(
             [
               attribute.class(
-                "size-fit mb-2 p-4 pt-1 text-4xl "
-                <> "@lg:mb-4 @lg:p-8 @lg:pt-3 @lg:text-5xl "
+                "size-fit mb-2 p-4 pt-1 text-6xl "
+                <> "@lg:mb-4 @lg:p-8 @lg:pt-3 "
                 <> "@4xl:mb-5 @4xl:p-12 @4xl:pt-5 @4xl:text-7xl "
                 <> "text-neutral font-normal italic font-obviously tracking-[-.12em] "
                 <> "animate__animated animate__fadeInDown",
@@ -364,10 +366,7 @@ fn view_home() -> Element(Msg) {
           html.p(
             [
               attribute.class(
-                "w-sm px-3 text-lg "
-                <> "@lg:w-md @lg:px-5 @lg:text-lg "
-                <> "@4xl:w-xl @lg:px-6 @4xl:text-2xl "
-                <> "text-shadow-md/30 text-shadow-neutral-content "
+                "px-8 py-4 bg-accent text-xl @4xl:w-lg "
                 <> "font-normal text-base-content font-darker",
               ),
             ],
@@ -496,7 +495,9 @@ fn view_prompt(
       html.div(
         [
           attribute.class(
-            "flex flex-col w-full py-0 mb-8 mobileLandscape:mb-0 @4xl:mb-32 gap-2 @4xl:gap-7 text-neutral-content text-center",
+            "flex flex-col w-full "
+            <> "py-0 mb-8 mobileLandscape:mb-0 @4xl:mb-32 gap-2 "
+            <> "@4xl:gap-7 text-neutral-content text-center",
           ),
         ],
         [
@@ -504,8 +505,7 @@ fn view_prompt(
           html.h1(
             [
               attribute.class(
-                "p-2 text-2xl "
-                <> "@lg:text-3xl "
+                "p-2 text-3xl "
                 <> "@4xl:text-5xl "
                 <> "text-neutral font-normal italic font-obviously tracking-[-.08em] "
                 <> "animate__animated animate__fadeIn",
@@ -533,7 +533,8 @@ fn view_step_indicator(total_steps: Int, current_step: Int) -> Element(Msg) {
   html.ul(
     [
       attribute.class(
-        "steps w-full @4xl:w-xl place-self-center text-center text-neutral font-semibold font-darker text-xl",
+        "steps w-full @4xl:w-xl place-self-center "
+        <> "text-center text-neutral font-semibold font-darker text-xl",
       ),
     ],
     list.map(steps, fn(step) {
