@@ -635,11 +635,17 @@ fn view_field_nav(
     option.is_none(field_content)
     || !regexp.check(field_validation_regex, option.unwrap(field_content, ""))
   html.div(
-    [attribute.class("flex flex-row w-full place-items-center gap-2 px-4")],
+    [
+      attribute.class(
+        "flex flex-row w-full @4xl:max-w-2/3 place-self-center gap-2 px-4",
+      ),
+    ],
     [
       html.button(
         [
-          attribute.class("btn btn-circle btn-sm @lg:btn-md @4xl:btn-lg"),
+          attribute.class(
+            "btn btn-circle btn-sm @lg:btn-md @4xl:btn-lg place-self-center",
+          ),
           attribute.hidden(current_step == 1),
           event.on_click(PreviousQuestion),
         ],
