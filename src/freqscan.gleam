@@ -561,7 +561,7 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
   let refresh_button =
     html.button(
       [
-        attribute.class("btn btn-outline btn-primary btn-circle btn-xs"),
+        attribute.class("btn btn-primary btn-circle btn-xs opacity-70"),
         event.on_click(RefreshNudges),
       ],
       [html.span([attribute.class("fa-solid fa-rotate-right")], [])],
@@ -570,7 +570,7 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
   html.div(
     [
       attribute.class(
-        "flex flex-col place-items-center gap-2 my-6 @lg:landscape:my-1",
+        "flex flex-col place-items-center gap-2 px-6 my-6 @lg:landscape:my-1",
       ),
     ],
     [
@@ -658,6 +658,7 @@ fn view_field_nav(
             attribute.class("pb-1 pl-3"),
             attribute.type_("text"),
             attribute.pattern(field_validation_string),
+            attribute.required(True),
             attribute.placeholder("Écris ta réponse"),
             attribute.attribute("minlength", int.to_string(input_min_length)),
             attribute.attribute("maxlength", int.to_string(input_max_length)),
