@@ -27,6 +27,7 @@ pub fn main() {
 
 type Model {
   Model(
+    total_questions: Int,
     answers: Answers,
     next_questions: List(#(Question, Answers)),
     previous_questions: List(#(Question, Answers)),
@@ -35,9 +36,6 @@ type Model {
     result: Option(Frequency),
   )
 }
-
-type Answers =
-  List(Choice)
 
 type Playlist {
   Playlist(deezer: String, spotify: String, apple: String, youtube: String)
@@ -63,6 +61,9 @@ type Question {
   Question(question_id: String, question: String)
 }
 
+type Answers =
+  List(Choice)
+
 type Choice {
   PromptChoice(answer: String, station: Station)
   CustomChoice(question: Question, answer: String)
@@ -83,9 +84,10 @@ type Page {
 }
 
 fn init(_) -> #(Model, Effect(Msg)) {
-  let questionnaire: Questionnaire = Questionnaire(questions:)
+  let questionnaire: Questionnaire = load_questionnaire()
   let model: Model =
     Model(
+      total_questions: list.length(questionnaire.questions),
       answers: [],
       next_questions: list.shuffle(questionnaire.questions),
       previous_questions: [],
@@ -206,7 +208,10 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
               ..model.previous_questions
             ],
             field_content: None,
-            current_page: Prompt(question: next_question, choices: next_choices),
+            current_page: Prompt(
+              question: next_question,
+              choices: list.shuffle(next_choices),
+            ),
           ),
           effect.none(),
         )
@@ -238,7 +243,7 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
             ..model,
             current_page: Prompt(
               question: previous_question,
-              choices: previous_choices,
+              choices: list.shuffle(previous_choices),
             ),
             previous_questions: rest,
             next_questions: [
@@ -273,14 +278,23 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
       #(model, effect.none())
     }
     // Re-rendering with the same model should yield different nudges
-    RefreshNudges | NoOp -> #(model, effect.none())
+    RefreshNudges -> {
+      let assert Prompt(choices:, question:) = model.current_page
+      #(
+        Model(
+          ..model,
+          current_page: Prompt(question:, choices: list.shuffle(choices)),
+        ),
+        effect.none(),
+      )
+    }
+    NoOp -> #(model, effect.none())
   }
 }
 
 // VIEW    ------------------------------------------------
 
 fn view(model: Model) -> Element(Msg) {
-  let total_questions = list.length(questions)
   let current_question = list.length(model.previous_questions) + 1
   case model {
     Model(current_page: Home, ..) -> view_home()
@@ -288,7 +302,7 @@ fn view(model: Model) -> Element(Msg) {
       view_prompt(
         question,
         choices,
-        total_questions,
+        model.total_questions,
         current_question,
         model.field_content,
       )
@@ -505,7 +519,7 @@ fn view_prompt(
             question,
             field_content,
           ),
-          choices |> view_choices,
+          choices |> list.take(4) |> view_choices,
         ],
       ),
     ],
@@ -552,7 +566,7 @@ fn view_choices(choices: List(Choice)) -> Element(Msg) {
       ],
       [html.span([attribute.class("fa-solid fa-rotate-right")], [])],
     )
-  let choice_buttons = list.map(choices, view_choice_button) |> list.shuffle
+  let choice_buttons = list.map(choices, view_choice_button)
   html.div(
     [
       attribute.class(
@@ -961,65 +975,96 @@ fn view_result(result: Frequency) -> Element(Msg) {
 
 // DATA    ------------------------------------------------
 
-const questions: List(#(Question, Answers)) = [
-  #(
-    Question(
-      question_id: "place",
-      question: "Un lieu idéal pour écouter de la musique ?",
+fn load_questionnaire() -> Questionnaire {
+  let questions: List(#(Question, Answers)) = [
+    #(
+      Question(
+        question_id: "place",
+        question: "Un lieu idéal pour écouter de la musique ?",
+      ),
+      [
+        PromptChoice(answer: "En plein air", station: Slower),
+        PromptChoice(answer: "Devant un coucher de soleil", station: Slower),
+        PromptChoice(answer: "Un club cosy", station: Slow),
+        PromptChoice(answer: "Un rooftop avec vue", station: Slow),
+        PromptChoice(answer: "Un club sombre avec strobos", station: Fast),
+        PromptChoice(
+          answer: "Dans une cave où le temps disparait",
+          station: Fast,
+        ),
+        PromptChoice(answer: "Une friche industrielle", station: Faster),
+        PromptChoice(answer: "Devant un systeme son massif", station: Faster),
+      ],
     ),
-    [
-      PromptChoice(answer: "En plein air", station: Slower),
-      PromptChoice(answer: "Un rooftop cosy", station: Slow),
-      PromptChoice(answer: "Un sous-sol moite", station: Fast),
-      PromptChoice(answer: "Une friche industrielle", station: Faster),
-    ],
-  ),
-  #(
-    Question(
-      question_id: "spirit",
-      question: "Quel est ton tempo intérieur ce soir ?",
+    #(
+      Question(
+        question_id: "spirit",
+        question: "Quel est ton tempo intérieur ce soir ?",
+      ),
+      [
+        PromptChoice(answer: "Rire en dansant", station: Slower),
+        PromptChoice(answer: "Bouger à ma façon", station: Slower),
+        PromptChoice(answer: "Planer en solo", station: Slow),
+        PromptChoice(answer: "Me laisser porter par la mélodie", station: Slow),
+        PromptChoice(answer: "Me perdre dans le rythme", station: Fast),
+        PromptChoice(answer: "Être en phase avec la foule", station: Fast),
+        PromptChoice(answer: "Une transe perpétuelle", station: Faster),
+        PromptChoice(answer: "Besoin que ca galope", station: Faster),
+      ],
     ),
-    [
-      PromptChoice(answer: "Rire en dansant", station: Slower),
-      PromptChoice(answer: "Me perdre dans le rythme", station: Slow),
-      PromptChoice(answer: "Besoin que ça galope", station: Fast),
-      PromptChoice(answer: "Rapide", station: Faster),
-    ],
-  ),
-  #(
-    Question(question_id: "outfit", question: "Ta tenue parfaite ?"),
-    [
+    #(Question(question_id: "outfit", question: "Ta tenue parfaite ?"), [
       PromptChoice(answer: "Fluide et colorée", station: Slower),
+      PromptChoice(answer: "Vintage et disco", station: Slower),
       PromptChoice(answer: "Décontractée et stylée", station: Slow),
+      PromptChoice(answer: "Pleine de paillettes", station: Slow),
       PromptChoice(answer: "Sobre et efficace", station: Fast),
+      PromptChoice(answer: "Noir c'est noir", station: Fast),
+      PromptChoice(answer: "Tout terrain", station: Faster),
       PromptChoice(answer: "Pratique et sport", station: Faster),
-    ],
-  ),
-  #(
-    Question(
-      question_id: "aesthetic",
-      question: "Si tu devais choisir un détail dans la musique…",
+    ]),
+    #(
+      Question(
+        question_id: "aesthetic",
+        question: "Si tu devais choisir un détail dans la musique…",
+      ),
+      [
+        PromptChoice(answer: "Une basse funky", station: Slower),
+        PromptChoice(answer: "Des vocaux puissants", station: Slower),
+        PromptChoice(answer: "Une mélodie entêtante", station: Slower),
+        PromptChoice(answer: "Une nappe aérienne", station: Slow),
+        PromptChoice(answer: "Un synthé acide", station: Slow),
+        PromptChoice(answer: "Des percussions organiques", station: Slow),
+        PromptChoice(answer: "Un ostinato hypnotique", station: Fast),
+        PromptChoice(answer: "Un rythme envoutant", station: Fast),
+        PromptChoice(answer: "Des basses progressives", station: Fast),
+        PromptChoice(answer: "Un kick sec et rapide", station: Faster),
+        PromptChoice(answer: "Un rythme extatique", station: Faster),
+        PromptChoice(answer: "Une rolling bassline", station: Faster),
+      ],
     ),
-    [
-      PromptChoice(answer: "Une basse funky", station: Slower),
-      PromptChoice(answer: "Des percussions organiques", station: Slow),
-      PromptChoice(answer: "Un ostinato entêtant", station: Fast),
-      PromptChoice(answer: "Un rythme extatique", station: Faster),
-    ],
-  ),
-  #(
-    Question(
-      question_id: "fuel",
-      question: "Quel est ton carburant en soirée ?",
+    #(
+      Question(
+        question_id: "fuel",
+        question: "Quel est ton carburant en soirée ?",
+      ),
+      [
+        PromptChoice(answer: "Un cocktail fruité", station: Slower),
+        PromptChoice(answer: "Une infusion fraîche", station: Slower),
+        PromptChoice(answer: "Une bière fraîche", station: Slower),
+        PromptChoice(answer: "Un kombutcha", station: Slow),
+        PromptChoice(answer: "Un bissap", station: Slow),
+        PromptChoice(answer: "Une boisson énergisante", station: Slow),
+        PromptChoice(answer: "De l'alcool fort", station: Fast),
+        PromptChoice(answer: "Un soda bien pétillant", station: Fast),
+        PromptChoice(answer: "Une tournée de B52", station: Fast),
+        PromptChoice(answer: "De l'eau pour rester hydraté", station: Faster),
+        PromptChoice(answer: "Rien", station: Faster),
+        PromptChoice(answer: "Juste la musique", station: Faster),
+      ],
     ),
-    [
-      PromptChoice(answer: "Un cocktail fruité", station: Slower),
-      PromptChoice(answer: "Un kombutcha", station: Slow),
-      PromptChoice(answer: "De l'alcool fort", station: Fast),
-      PromptChoice(answer: "De l'eau pour rester hydraté", station: Faster),
-    ],
-  ),
-]
+  ]
+  Questionnaire(questions:)
+}
 
 fn station_to_string(station: Station) -> String {
   case station {
