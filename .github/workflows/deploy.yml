@@ -28,7 +28,7 @@ jobs:
       - name: Update assets paths in freqscan.gleam and index.html
         run: |
           sed -i 's|src/assets|assets|' src/freqscan.gleam
-          sed -i 's|src/assets|freqscan/assets|' src/freqscan.css
+          sed -i 's|src/assets|assets|' src/freqscan.css
           sed -i 's|"src/assets|"assets|' index.html
       - name: Build app
         run: gleam run -m lustre/dev build app --minify
