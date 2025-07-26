@@ -899,53 +899,46 @@ fn view_result(result: Frequency) -> Element(Msg) {
               html.a(
                 [
                   attribute.class(
-                    "place-content-center btn btn-ghost btn-circle btn-sm fa-brands text-xl",
+                    "place-content-center btn btn-ghost btn-circle btn-sm text-xl",
                   ),
                   attribute.href(deezer_link),
                   attribute.target("_blank"),
                   attribute.rel("noopener noreferrer"),
                 ],
-                [
-                  html.img([
-                    attribute.class(
-                      "size-full h-6 py-1 transition-all dark:hover:invert",
-                    ),
-                    attribute.src("/src/assets/logos/deezer.svg"),
-                  ]),
-                ],
+                [html.span([attribute.class("fa-brands fa-deezer ")], [])],
               ),
               html.a(
                 [
                   attribute.class(
-                    "place-content-center btn btn-ghost btn-circle btn-sm fa-brands fa-spotify text-xl",
+                    "place-content-center btn btn-ghost btn-circle btn-sm text-xl",
                   ),
                   attribute.href(spotify_link),
                   attribute.target("_blank"),
                   attribute.rel("noopener noreferrer"),
                 ],
-                [],
+                [html.span([attribute.class("fa-brands fa-spotify")], [])],
               ),
               html.a(
                 [
                   attribute.class(
-                    "place-content-center btn btn-ghost btn-circle btn-sm fa-brands fa-apple text-xl",
+                    "place-content-center btn btn-ghost btn-circle btn-sm text-xl",
                   ),
                   attribute.href(apple_music_link),
                   attribute.target("_blank"),
                   attribute.rel("noopener noreferrer"),
                 ],
-                [],
+                [html.span([attribute.class("fa-brands fa-apple")], [])],
               ),
               html.a(
                 [
                   attribute.class(
-                    "place-content-center btn btn-ghost btn-circle btn-sm fa-brands fa-youtube text-xl",
+                    "place-content-center btn btn-ghost btn-circle btn-sm text-xl",
                   ),
                   attribute.href(youtube_link),
                   attribute.target("_blank"),
                   attribute.rel("noopener noreferrer"),
                 ],
-                [],
+                [html.span([attribute.class("fa-brands fa-youtube")], [])],
               ),
             ]),
           ],
