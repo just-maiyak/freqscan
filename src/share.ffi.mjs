@@ -1,5 +1,9 @@
 import { Ok, Error } from "./gleam.mjs";
 
+export function can_share() {
+    return navigator.canShare
+}
+
 export function share_image(image_data) {
   const image_u8_array = Uint8Array.from(
       window.atob(image_data),
