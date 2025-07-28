@@ -899,6 +899,7 @@ fn view_result(result: Frequency) -> Element(Msg) {
                 attribute.class(
                   "pb-1 btn btn-sm mobileLandscape:btn-xs text-xl mobileLandscape:text-lg shadow-lg",
                 ),
+                attribute.hidden(!can_share()),
                 event.on_click(ShareFrequency),
               ],
               [html.text("Partage ta fréquence")],
@@ -1082,6 +1083,11 @@ fn station_to_string(station: Station) -> String {
 @external(javascript, "./share.ffi.mjs", "share_image")
 fn share_image(_image_data: String) -> Result(Nil, String) {
   Ok(Nil)
+}
+
+@external(javascript, "./share.ffi.mjs", "can_share")
+fn can_share() -> Bool {
+  False
 }
 
 fn share_frequency(image_data: String) -> Effect(Msg) {
